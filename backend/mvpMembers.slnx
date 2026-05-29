@@ -1,0 +1,6 @@
+<Solution>
+  <Project Path="mvpMembers.API/mvpMembers.API.csproj" />
+  <Project Path="mvpMembers.Application/mvpMembers.Application.csproj" />
+  <Project Path="mvpMembers.Domain/mvpMembers.Domain.csproj" />
+  <Project Path="mvpMembers.Infrastructure/mvpMembers.Infrastructure.csproj" />
+</Solution>

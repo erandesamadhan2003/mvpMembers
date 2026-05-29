@@ -1,0 +1,47 @@
+# Build folders
+bin/
+obj/
+
+# User-specific files
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# VS Code
+.vscode/
+
+# Rider / JetBrains
+.idea/
+
+# Visual Studio
+.vs/
+
+# Logs
+*.log
+
+# Environment files
+.env
+.env.*
+
+# ASP.NET secrets
+secrets.json
+
+# Publish output
+publish/
+
+# NuGet packages
+*.nupkg
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Entity Framework
+Migrations/
+
+# Docker
+docker-data/
+
+# App settings (optional)
+appsettings.Development.json

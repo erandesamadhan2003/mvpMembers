@@ -1,0 +1,17 @@
+services:
+  mssqlserver:
+    image: mcr.microsoft.com/mssql/server:2025-latest
+    container_name: mvp-members-sql
+
+    environment:
+      ACCEPT_EULA: "Y"
+      MSSQL_SA_PASSWORD: "mvpMember@1234@"
+
+    ports:
+      - "1433:1433"
+
+    volumes:
+      - mvp_members_data:/var/opt/mssql
+
+volumes:
+  mvp_members_data:
