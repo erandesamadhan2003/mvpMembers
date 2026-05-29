@@ -1,13 +1,14 @@
 using Microsoft.EntityFrameworkCore;
 using mvpMembers.Infrastructure.Persistence;
 using mvpMembers.API.Extensions;
+using mvpMembers.API.Properties;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
 builder.Services.AddDatabase(builder.Configuration);
 builder.Services.AddRedis(builder.Configuration);
-
+builder.Services.AddApplicationServices();
 var app = builder.Build();
 
 // using (var scope = app.Services.CreateScope())
@@ -44,6 +45,7 @@ var app = builder.Build();
 // }
 
 app.ApplyMigrations();
+app.MapControllers();
 
 app.MapGet("/", () => "MVP Members API is running!");
 

@@ -1,1 +1,7 @@
-GET http://localhost:5083
+POST http://localhost:5083/api/auth/login
+Content-Type: application/json
+
+{
+    "email": "erandesamadhan2003@gmail.com",
+    "password": ""
+}
