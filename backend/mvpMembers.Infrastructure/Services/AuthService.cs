@@ -6,10 +6,11 @@ using mvpMembers.Infrastructure.Persistence;
 
 namespace mvpMembers.Infrastructure.Services;
 
-public class AuthService(AppDbContext db, OTPService otpService) : IAuthService
+public class AuthService(AppDbContext db, OTPService otpService, IJwtService jwtService) : IAuthService
 {
     private readonly AppDbContext _db = db;
     private readonly OTPService _otpService = otpService;
+    private readonly IJwtService _jwtService = jwtService;
 
     public async Task<bool> LoginAsync(LoginRequestDto loginRequest)
     {
@@ -31,5 +32,23 @@ public class AuthService(AppDbContext db, OTPService otpService) : IAuthService
         Console.WriteLine($"OTP for {user.Email}: {otp}"); 
 
         return true;
+    }
+
+    public async Task<string?> VerifyOTPAsync(VerifyOTPRequestDto verifyOTPRequest)
+    {
+        var storedOTP = await _otpService.GetOTPAsync(verifyOTPRequest.Email);
+
+        if (storedOTP is null || storedOTP != verifyOTPRequest.OTP)
+            return null;
+
+        await _otpService.DeleteOTPAsync(verifyOTPRequest.Email);
+
+        var user = await _db.Users.FirstOrDefaultAsync(u => u.Email == verifyOTPRequest.Email);
+        
+        if (user is null)
+            return null;
+        
+        return _jwtService.GenerateToken(user);
+        
     }
 }

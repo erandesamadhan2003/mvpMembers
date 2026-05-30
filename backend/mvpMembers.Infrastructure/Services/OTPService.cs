@@ -18,7 +18,7 @@ public class OTPService(IConnectionMultiplexer redis)
         return await db.StringGetAsync($"OTP:{email}");
     }
 
-    public async Task RemoveOTPAsync(string email)
+    public async Task DeleteOTPAsync(string email)
     {
         var db = _redis.GetDatabase();
         await db.KeyDeleteAsync(email);

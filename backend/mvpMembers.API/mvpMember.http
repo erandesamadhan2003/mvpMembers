@@ -1,7 +1,17 @@
-POST http://localhost:5083/api/auth/login
+# POST http://localhost:5083/api/auth/login
+# Content-Type: application/json
+
+# {
+#     "email": "erandesamadhan2003@gmail.com",
+#     "password": "admin@1234#"
+# }
+
+
+
+POST http://localhost:5083/api/auth/verify-otp
 Content-Type: application/json
 
 {
     "email": "erandesamadhan2003@gmail.com",
-    "password": ""
+    "otp": "681082"
 }
