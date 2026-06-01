@@ -8,7 +8,7 @@ internal static class HashPassword
     {
         Console.WriteLine(
             BCrypt.Net.BCrypt.HashPassword(
-                ""
+                "Admin@1234#"
             )
         );
     }

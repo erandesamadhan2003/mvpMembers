@@ -7,11 +7,16 @@
 # }
 
 
+# POST http://localhost:5083/api/auth/verify-otp
+# Content-Type: application/json
 
-POST http://localhost:5083/api/auth/verify-otp
-Content-Type: application/json
+# {
+#     "email": "erandesamadhan2003@gmail.com",
+#     "otp": "570578"
+# }
 
-{
-    "email": "erandesamadhan2003@gmail.com",
-    "otp": "681082"
-}
+
+## Test Private Protected Endpoint
+# GET http://localhost:5083/api/test/private
+# Accept: application/json
+# Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1laWRlbnRpZmllciI6IjEiLCJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9lbWFpbGFkZHJlc3MiOiJlcmFuZGVzYW1hZGhhbjIwMDNAZ21haWwuY29tIiwiaHR0cDovL3NjaGVtYXMueG1sc29hcC5vcmcvd3MvMjAwNS8wNS9pZGVudGl0eS9jbGFpbXMvbmFtZSI6IlNhbWFkaGFuIEVyYW5kZSIsImV4cCI6MTc4MDMzMTU2NCwiaXNzIjoibXZwTWVtYmVycyIsImF1ZCI6Im12cE1lbWJlcnNDbGllbnQifQ.PpmjdBB88xWSbNEAVF8wPJ44vLaROHy8DNZqUpA_Nrs
