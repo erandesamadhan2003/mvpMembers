@@ -66,3 +66,13 @@ The .NET Secret Manager saves these values in a system-protected JSON file compl
 
 * **Windows:** `%APPDATA%\Microsoft\UserSecrets\<UserSecretsId>\secrets.json`
 * **macOS/Linux:** `~/.microsoft/usersecrets/<UserSecretsId>/secrets.json`
+
+
+# Migrations: 
+```
+cd backend/
+
+dotnet ef migrations add MIGRATION_NAME_HERE \
+--project mvpMembers.Infrastructure \
+--startup-project mvpMembers.API
+```
