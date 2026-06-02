@@ -1,7 +1,4 @@
-using Microsoft.EntityFrameworkCore;
-using mvpMembers.Infrastructure.Persistence;
 using mvpMembers.API.Extensions;
-using mvpMembers.API.Properties;
 
 var builder = WebApplication.CreateBuilder(args);
 

@@ -1,5 +1,6 @@
 using Azure.Core;
 using Microsoft.AspNetCore.Mvc;
+using mvpMembers.Application.Common;
 using mvpMembers.Application.DTOs.Auth;
 using mvpMembers.Application.Interfaces.Services;
 
@@ -17,9 +18,9 @@ public class AuthController(IAuthService authService) : ControllerBase
     {
         var result = await _authService.LoginAsync(loginRequest);
         if (!result)
-            return Unauthorized(new { message = "Invalid email or password" });
+            return Unauthorized(new ApiResponse<object>(false, "Invalid email or password", 401, null));
 
-        return Ok(new { message = "Login successful, OTP sent to email" });
+        return Ok(new ApiResponse<object>(true, "Login successful, OTP sent to email", 200, null));
     }
 
     [HttpPost("verify-otp")]
@@ -27,8 +28,8 @@ public class AuthController(IAuthService authService) : ControllerBase
     {
         var token = await _authService.VerifyOTPAsync(verifyOTPRequest);
         if (token is null)
-            return Unauthorized(new { message = "Invalid OTP" });
+            return Unauthorized(new ApiResponse<string>(false, "Invalid OTP", 401, null));
 
-        return Ok(new { AccessToken = token });
+        return Ok(new ApiResponse<string>(true, "OTP verified successfully", 200, token));
     }
 }
