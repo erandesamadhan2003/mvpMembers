@@ -1,6 +1,9 @@
 using mvpMembers.Application.Interfaces.Services;
 using mvpMembers.Infrastructure.Services;
 
+using mvpMembers.Application.Interfaces.Repositories;
+using mvpMembers.Infrastructure.Repositories;
+
 namespace mvpMembers.API.Extensions;
 
 public static class ServiceExtension
@@ -10,6 +13,20 @@ public static class ServiceExtension
         services.AddScoped<IAuthService, AuthService>();
         services.AddScoped<OTPService>();
         services.AddScoped<IJwtService, JwtService>();
+        
+        // Repositories
+        services.AddScoped<IOrganizationMemberSectionRepository, OrganizationMemberSectionRepository>();
+        services.AddScoped<IOrganizationMemberTownRepository, OrganizationMemberTownRepository>();
+        services.AddScoped<IOrganizationMemberCenterRepository, OrganizationMemberCenterRepository>();
+        services.AddScoped<IOrganizationMemberRepository, OrganizationMemberRepository>();
+        services.AddScoped<IOrganizationMemberDocumentRepository, OrganizationMemberDocumentRepository>();
+
+        // Services
+        services.AddScoped<IOrganizationMemberSectionService, OrganizationMemberSectionService>();
+        services.AddScoped<IOrganizationMemberTownService, OrganizationMemberTownService>();
+        services.AddScoped<IOrganizationMemberCenterService, OrganizationMemberCenterService>();
+        services.AddScoped<IOrganizationMemberService, OrganizationMemberService>();
+        services.AddScoped<IOrganizationMemberDocumentService, OrganizationMemberDocumentService>();
         return services;
     }
 }
