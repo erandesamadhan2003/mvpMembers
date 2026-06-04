@@ -8,12 +8,24 @@ public class OrganizationMemberTownService(IOrganizationMemberTownRepository org
 {
     private readonly IOrganizationMemberTownRepository _organizationMemberTownRepository = organizationMemberTownRepository;
 
-    public async Task<long> CreateAsync(OrganizationMemberTown organizationMemberTown)
+    public async Task<long> CreateAsync(string townName)
     {
-        if (string.IsNullOrWhiteSpace(organizationMemberTown.TownName))
-            throw new ArgumentException("TownName is required");
+        var towns = await _organizationMemberTownRepository.GetAllAsync();
+
+        long nextTownId = towns.Any()
+            ? towns.Max(x => x.TownID) + 1
+            : 1;
+
+        var organizationMemberTown = new OrganizationMemberTown
+        {
+            TownID = nextTownId,
+            TownName = townName,
+            AddByTime = DateTime.UtcNow,
+            OCode = 1
+        };
 
         await _organizationMemberTownRepository.AddAsync(organizationMemberTown);
+
         return organizationMemberTown.OrganizationMemberTownID;
     }
 

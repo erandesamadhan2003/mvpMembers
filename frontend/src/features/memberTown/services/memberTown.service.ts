@@ -29,6 +29,7 @@ export const memberTownService = {
   },
 
   create: async (payload: CreateMemberTownRequest): Promise<number> => {
+    console.log('Creating member town with payload:', payload)
     const response = await api.post<ApiResponse<number>>(
       ENDPOINTS.memberTowns.base,
       payload,

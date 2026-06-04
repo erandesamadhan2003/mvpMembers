@@ -12,7 +12,7 @@ function invalidateMemberTowns(queryClient: ReturnType<typeof useQueryClient>) {
 
 export function useCreateMemberTownMutation() {
   const queryClient = useQueryClient()
-
+  
   return useMutation({
     mutationFn: (payload: CreateMemberTownRequest) =>
       memberTownService.create(payload),

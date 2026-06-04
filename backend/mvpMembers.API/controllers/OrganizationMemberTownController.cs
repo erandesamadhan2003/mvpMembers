@@ -57,15 +57,7 @@ public class OrganizationMemberTownController(IOrganizationMemberTownService org
 
         try
         {
-            var town = new OrganizationMemberTown
-            {
-                TownID = request.TownID,
-                TownName = request.TownName,
-                OCode = request.OCode,
-                AddByTime = DateTime.UtcNow
-            };
-
-            var townId = await _organizationMemberTownService.CreateAsync(town);
+            var townId = await _organizationMemberTownService.CreateAsync(request.TownName);
             return Created(string.Empty, new ApiResponse<long>(true, "Organization member town created successfully", 201, townId));
         }
         catch (Exception ex)
@@ -117,9 +109,7 @@ public class OrganizationMemberTownController(IOrganizationMemberTownService org
 
 public class CreateOrganizationMemberTownRequest
 {
-    public long TownID { get; set; }
     public string TownName { get; set; } = string.Empty;
-    public long? OCode { get; set; }
 }
 
 public class UpdateOrganizationMemberTownRequest

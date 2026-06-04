@@ -37,9 +37,9 @@ function TownActionsCell(
 }
 
 export const TownGrid = memo(function TownGrid({ onAdd }: { onAdd: () => void }) {
-  const gridApiRef = useRef<GridApi<MemberTown> | null>(null)
+  const gridApiRef = useRef<GridApi<MemberTown> | undefined>(undefined)
   const { search, setSearch, quickFilterText } = useGridQuickFilter()
-  const { data = [], isLoading, isError, error, refetch } = useMemberTownsQuery()
+  const { data = [], isLoading, isError, error } = useMemberTownsQuery()
   const deleteMutation = useDeleteMemberTownMutation()
   const [formOpen, setFormOpen] = useState(false)
   const [editing, setEditing] = useState<MemberTown | null>(null)
@@ -55,7 +55,6 @@ export const TownGrid = memo(function TownGrid({ onAdd }: { onAdd: () => void })
       { field: 'organizationMemberTownID', headerName: 'ID', maxWidth: 100 },
       { field: 'townID', headerName: 'Town ID', maxWidth: 110 },
       { field: 'townName', headerName: 'Town Name', flex: 2 },
-      { field: 'oCode', headerName: 'O Code', maxWidth: 110 },
       {
         headerName: 'Actions',
         maxWidth: 120,
@@ -92,7 +91,7 @@ export const TownGrid = memo(function TownGrid({ onAdd }: { onAdd: () => void })
         description={`Delete "${deleteTarget?.townName}"?`}
         confirmLabel="Delete"
         destructive
-        loading={deleteMutation.isPending}
+        loading={deleteMutation.isPending}  
         onConfirm={async () => {
           if (deleteTarget) {
             await deleteMutation.mutateAsync(deleteTarget.organizationMemberTownID)
