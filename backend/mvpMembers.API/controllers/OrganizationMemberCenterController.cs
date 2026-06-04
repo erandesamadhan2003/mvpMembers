@@ -64,16 +64,8 @@ public class OrganizationMemberCenterController(IOrganizationMemberCenterService
 
         try
         {
-            var center = new OrganizationMemberCenter
-            {
-                CenterID = request.CenterID,
-                CenterName = request.CenterName,
-                OrganizationMemberTownID = request.OrganizationMemberTownID,
-                OCode = request.OCode,
-                AddByTime = DateTime.UtcNow
-            };
 
-            var centerId = await _organizationMemberCenterService.CreateAsync(center);
+            var centerId = await _organizationMemberCenterService.CreateAsync(request.OrganizationMemberTownID, request.CenterName);
             return Created(string.Empty, new ApiResponse<long>(true, "Organization member center created successfully", 201, centerId));
         }
         catch (Exception ex)
@@ -126,10 +118,10 @@ public class OrganizationMemberCenterController(IOrganizationMemberCenterService
 
 public class CreateOrganizationMemberCenterRequest
 {
-    public string CenterID { get; set; } = string.Empty;
+    // public string CenterID { get; set; } = string.Empty;
     public string CenterName { get; set; } = string.Empty;
     public long OrganizationMemberTownID { get; set; }
-    public long? OCode { get; set; }
+    // public long? OCode { get; set; }
 }
 
 public class UpdateOrganizationMemberCenterRequest

@@ -1,5 +1,5 @@
 import { memo, useEffect, useMemo } from 'react'
-import { useForm } from 'react-hook-form'
+import { useForm, type Resolver } from 'react-hook-form'
 import { z } from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
 import {
@@ -21,13 +21,17 @@ import {
 import type { MemberCenter } from '@/features/memberCenter/types/memberCenter.types'
 
 const schema = z.object({
-  centerID: z.string().min(1, 'Center ID is required'),
   centerName: z.string().min(1, 'Center name is required'),
   organizationMemberTownID: z.coerce.number().positive('Town is required'),
-  oCode: z.coerce.number().optional().nullable(),
 })
 
-type FormValues = z.infer<typeof schema>
+// Input type uses string | number since the select gives a string before coercion
+type FormInput = {
+  centerName: string
+  organizationMemberTownID: number | string
+}
+// Output type is the fully validated/coerced shape
+type FormValues = z.output<typeof schema>
 
 interface CenterFormDialogProps {
   open: boolean
@@ -45,13 +49,12 @@ export const CenterFormDialog = memo(function CenterFormDialog({
   const createMutation = useCreateMemberCenterMutation()
   const updateMutation = useUpdateMemberCenterMutation()
 
-  const form = useForm<FormValues>({
-    resolver: zodResolver(schema),
+  // TFieldValues = FormInput (raw), TContext = any, TTransformedValues = FormValues (coerced)
+  const form = useForm<FormInput, any, FormValues>({
+    resolver: zodResolver(schema) as Resolver<FormInput, any, FormValues>,
     defaultValues: {
-      centerID: '',
       centerName: '',
       organizationMemberTownID: 0,
-      oCode: null,
     },
   })
 
@@ -67,10 +70,8 @@ export const CenterFormDialog = memo(function CenterFormDialog({
   useEffect(() => {
     if (open) {
       form.reset({
-        centerID: center?.centerID ?? '',
         centerName: center?.centerName ?? '',
         organizationMemberTownID: center?.organizationMemberTownID ?? 0,
-        oCode: center?.oCode ?? null,
       })
     }
   }, [open, center, form])
@@ -78,10 +79,8 @@ export const CenterFormDialog = memo(function CenterFormDialog({
   const onSubmit = form.handleSubmit(async (values) => {
     try {
       const payload = {
-        centerID: values.centerID,
         centerName: values.centerName,
         organizationMemberTownID: values.organizationMemberTownID,
-        oCode: values.oCode ?? null,
       }
       if (isEdit && center) {
         await updateMutation.mutateAsync({
@@ -107,10 +106,6 @@ export const CenterFormDialog = memo(function CenterFormDialog({
           <DialogTitle>{isEdit ? 'Edit Member Center' : 'Add Member Center'}</DialogTitle>
         </DialogHeader>
         <form onSubmit={onSubmit} className="grid gap-4 sm:grid-cols-2">
-          <div className="space-y-2">
-            <Label htmlFor="center-id">Center ID</Label>
-            <Input id="center-id" {...form.register('centerID')} />
-          </div>
           <div className="space-y-2 sm:col-span-2">
             <Label htmlFor="center-name">Center Name</Label>
             <Input id="center-name" {...form.register('centerName')} />
@@ -122,7 +117,7 @@ export const CenterFormDialog = memo(function CenterFormDialog({
               className="flex h-9 w-full rounded-md border border-input bg-card px-3 text-sm"
               value={townValue}
               onChange={(e) =>
-                form.setValue('organizationMemberTownID', Number(e.target.value))
+                form.setValue('organizationMemberTownID', e.target.value)
               }
               aria-label="Select town"
             >
@@ -133,10 +128,6 @@ export const CenterFormDialog = memo(function CenterFormDialog({
                 </option>
               ))}
             </select>
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="center-ocode">O Code</Label>
-            <Input id="center-ocode" type="number" {...form.register('oCode')} />
           </div>
           <DialogFooter className="sm:col-span-2">
             <Button type="button" variant="outline" onClick={() => onOpenChange(false)} disabled={pending}>

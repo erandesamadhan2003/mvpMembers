@@ -8,10 +8,20 @@ public class OrganizationMemberCenterService(IOrganizationMemberCenterRepository
 {
     private readonly IOrganizationMemberCenterRepository _organizationMemberCenterRepository = organizationMemberCenterRepository;
 
-    public async Task<long> CreateAsync(OrganizationMemberCenter organizationMemberCenter)
+    public async Task<long> CreateAsync(long organizationMemberTownId, string centerName)
     {
-        if (string.IsNullOrWhiteSpace(organizationMemberCenter.CenterName))
-            throw new ArgumentException("CenterName is required");
+        List<OrganizationMemberCenter> existingCenters = await _organizationMemberCenterRepository.GetByTownIdAsync(organizationMemberTownId);
+        int totalCenters = existingCenters.Count + 1;
+        string centerId = $"{organizationMemberTownId}.{totalCenters}";
+        
+        var organizationMemberCenter = new OrganizationMemberCenter
+        {
+            OrganizationMemberTownID = organizationMemberTownId,
+            CenterName = centerName,
+            CenterID = centerId,
+            OCode = 1,
+            AddByTime = DateTime.UtcNow,
+        };
 
         await _organizationMemberCenterRepository.AddAsync(organizationMemberCenter);
         return organizationMemberCenter.OrganizationMemberCenterID;

@@ -52,7 +52,7 @@ export const TownGrid = memo(function TownGrid({ onAdd }: { onAdd: () => void })
 
   const columnDefs = useMemo<ColDef<MemberTown>[]>(
     () => [
-      { field: 'organizationMemberTownID', headerName: 'ID', maxWidth: 100 },
+      // { field: 'organizationMemberTownID', headerName: 'ID', maxWidth: 100 },
       { field: 'townID', headerName: 'Town ID', maxWidth: 110 },
       { field: 'townName', headerName: 'Town Name', flex: 2 },
       {

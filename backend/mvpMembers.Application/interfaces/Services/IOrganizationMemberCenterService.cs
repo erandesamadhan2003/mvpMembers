@@ -4,7 +4,7 @@ namespace mvpMembers.Application.Interfaces.Services;
 
 public interface IOrganizationMemberCenterService
 {
-    Task<long> CreateAsync(OrganizationMemberCenter organizationMemberCenter);
+    Task<long> CreateAsync(long organizationMemberTownId, string centerName);
     Task UpdateAsync(long id, OrganizationMemberCenter organizationMemberCenter);
     Task DeleteAsync(long id);
     Task<OrganizationMemberCenter?> GetByIdAsync(long id);

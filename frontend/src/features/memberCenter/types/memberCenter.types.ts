@@ -11,15 +11,15 @@ export interface MemberCenter extends AuditFields {
 }
 
 export interface CreateMemberCenterRequest {
-  centerID: string
+  // centerID: string
   centerName: string
   organizationMemberTownID: number
-  oCode?: number | null
+  // oCode?: number | null
 }
 
 export interface UpdateMemberCenterRequest {
-  centerID: string
+  // centerID: string
   centerName: string
   organizationMemberTownID: number
-  oCode?: number | null
+  // oCode?: number | null
 }
