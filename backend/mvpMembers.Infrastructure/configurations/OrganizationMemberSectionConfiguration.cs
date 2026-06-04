@@ -10,6 +10,7 @@ public class OrganizationMemberSectionConfiguration: IEntityTypeConfiguration<Or
     {
         builder.ToTable("OrganizationMemberSection");
         builder.HasKey(x => x.MemberSectionID);
+        builder.Property(x => x.MemberSectionID).UseIdentityColumn(1, 1);
         builder.Property(x => x.MemberSectionName).HasMaxLength(50).IsRequired();
     }
 }
