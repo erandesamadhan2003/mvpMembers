@@ -18,8 +18,8 @@ import { Badge } from '@/components/ui/badge'
 import {
   useDeleteDocumentMutation,
   useDocumentsQuery,
-} from '@/features/document/hooks'
-import type { MemberDocument } from '@/features/document/types/document.types'
+} from '@/features/member/documents/hooks'
+import type { MemberDocument } from '@/features/member/documents/types/document.types'
 import { getApiErrorMessage } from '@/api'
 
 const DocumentActionsCell = createActionsCellRenderer<MemberDocument>()

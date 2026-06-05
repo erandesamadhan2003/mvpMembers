@@ -1,7 +1,6 @@
 import type { LucideIcon } from 'lucide-react'
 import {
   Building2,
-  FileText,
   LayoutDashboard,
   MapPin,
   Settings,
@@ -56,19 +55,7 @@ export const SIDEBAR_MENU: MenuItem[] = [
     icon: Users,
     children: [
       { id: 'member-list', label: 'Member List', href: ROUTES.members },
-      { id: 'add-member', label: 'Add Member', href: ROUTES.memberCreate },
-    ],
-  },
-  {
-    id: 'documents',
-    label: 'Documents',
-    icon: FileText,
-    children: [
-      {
-        id: 'member-documents',
-        label: 'Member Documents',
-        href: ROUTES.documents,
-      },
+      { id: 'add-member', label: 'Register Member', href: ROUTES.memberCreate },
     ],
   },
   {

@@ -13,7 +13,21 @@ public class OrganizationMemberService(IOrganizationMemberRepository organizatio
         if (string.IsNullOrWhiteSpace(organizationMember.FirstName))
             throw new ArgumentException("FirstName is required");
 
+        organizationMember.RegistrationDate = DateTime.UtcNow;
+        organizationMember.FlagStatus = "Active";
         await _organizationMemberRepository.AddAsync(organizationMember);
+
+        if (organizationMember.TransferOrganizationMemberID is > 0)
+        {
+            var sourceMember = await _organizationMemberRepository.GetByIdAsync(
+                organizationMember.TransferOrganizationMemberID.Value)
+                ?? throw new Exception("Transfer source member not found");
+            sourceMember.IsTransfer = true;
+            sourceMember.FlagStatus = "Inactive";
+            sourceMember.EditByTime = DateTime.UtcNow;
+            await _organizationMemberRepository.UpdateAsync(sourceMember);
+        }
+
         return organizationMember.OrganizationMemberID;
     }
 
@@ -22,6 +36,7 @@ public class OrganizationMemberService(IOrganizationMemberRepository organizatio
         var existingMember = await _organizationMemberRepository.GetByIdAsync(id)
             ?? throw new Exception("Organization member not found");
 
+        existingMember.NameTitleID = organizationMember.NameTitleID;
         existingMember.FirstName = organizationMember.FirstName;
         existingMember.LastName = organizationMember.LastName;
         existingMember.MiddleName = organizationMember.MiddleName;

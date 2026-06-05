@@ -36,18 +36,11 @@ const MemberList = lazy(() =>
   })),
 )
 const MemberCreatePage = lazy(() =>
-  import('@/features/member/pages/MemberCreatePage').then((m) => ({
-    default: m.MemberCreatePage,
-  })),
+  import('@/features/member/pages/MemberCreatePage').then((m) => ({default: m.MemberCreatePage,})),
 )
 const MemberDetailPage = lazy(() =>
   import('@/features/member/pages/MemberDetailPage').then((m) => ({
     default: m.MemberDetailPage,
-  })),
-)
-const DocumentList = lazy(() =>
-  import('@/features/document/pages/DocumentList').then((m) => ({
-    default: m.DocumentList,
   })),
 )
 const PlaceholderPage = lazy(() =>
@@ -152,14 +145,6 @@ export const router = createBrowserRouter([
             element: (
               <LazyPage>
                 <MemberDetailPage />
-              </LazyPage>
-            ),
-          },
-          {
-            path: ROUTES.documents,
-            element: (
-              <LazyPage>
-                <DocumentList />
               </LazyPage>
             ),
           },

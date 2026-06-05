@@ -1,7 +1,7 @@
 import { memo } from 'react'
 import { Building2, FileText, MapPin, Users } from 'lucide-react'
 import { PageContainer, PageHeader, StatCard } from '@/components/common'
-import { useDocumentsQuery } from '@/features/document/hooks'
+import { useDocumentsQuery } from '@/features/member/documents/hooks'
 import { useMemberCentersQuery } from '@/features/memberCenter/hooks'
 import { useMemberSectionsQuery } from '@/features/memberSection/hooks'
 import { useMemberTownsQuery } from '@/features/memberTown/hooks'

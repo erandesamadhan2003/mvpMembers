@@ -6,8 +6,8 @@ import { useGridQuickFilter } from '@/components/grid/useGridQuickFilter'
 import { GridToolbar } from '@/components/common/GridToolbar'
 import { PageContainer, PageHeader } from '@/components/common'
 import { Card, CardContent } from '@/components/ui/card'
-import { useDocumentsQuery } from '@/features/document/hooks'
-import type { MemberDocument } from '@/features/document/types/document.types'
+import { useDocumentsQuery } from '@/features/member/documents/hooks'
+import type { MemberDocument } from '@/features/member/documents/types/document.types'
 
 export const DocumentList = memo(function DocumentList() {
   const gridApiRef = useRef<GridApi<MemberDocument> | null>(null)

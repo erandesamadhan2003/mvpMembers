@@ -73,6 +73,7 @@ public class OrganizationMemberController(IOrganizationMemberService organizatio
         {
             var member = new OrganizationMember
             {
+                NameTitleID = request.NameTitleID,
                 FirstName = request.FirstName,
                 LastName = request.LastName,
                 MiddleName = request.MiddleName,
@@ -99,6 +100,11 @@ public class OrganizationMemberController(IOrganizationMemberService organizatio
                 RegistrationDate = request.RegistrationDate ?? DateTime.UtcNow,
                 MemberSectionID = request.MemberSectionID,
                 OrganizationMemberCenterID = request.OrganizationMemberCenterID,
+                IsTransfer = request.IsTransfer ?? false,
+                TransferOrganizationMemberID = request.TransferOrganizationMemberID,
+                MemberCardIssue = request.IsTransfer == true,
+                FlagStatus = request.IsTransfer == true ? "Active" : "Pending",
+                OCode = 1,
                 AddByTime = DateTime.UtcNow
             };
 
@@ -123,6 +129,7 @@ public class OrganizationMemberController(IOrganizationMemberService organizatio
         {
             var member = new OrganizationMember
             {
+                NameTitleID = request.NameTitleID,
                 FirstName = request.FirstName,
                 LastName = request.LastName,
                 MiddleName = request.MiddleName,
@@ -175,6 +182,7 @@ public class OrganizationMemberController(IOrganizationMemberService organizatio
 
 public class CreateOrganizationMemberRequest
 {
+    public long? NameTitleID { get; set; }
     public string FirstName { get; set; } = string.Empty;
     public string? LastName { get; set; }
     public string? MiddleName { get; set; }
@@ -201,10 +209,13 @@ public class CreateOrganizationMemberRequest
     public DateTime? RegistrationDate { get; set; }
     public long? MemberSectionID { get; set; }
     public long? OrganizationMemberCenterID { get; set; }
+    public bool? IsTransfer { get; set; }
+    public long? TransferOrganizationMemberID { get; set; }
 }
 
 public class UpdateOrganizationMemberRequest
 {
+    public long? NameTitleID { get; set; }
     public string FirstName { get; set; } = string.Empty;
     public string? LastName { get; set; }
     public string? MiddleName { get; set; }

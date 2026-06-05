@@ -1,10 +1,11 @@
+import axios from 'axios'
 import { api, ENDPOINTS, unwrap } from '@/api'
 import type { ApiResponse } from '@/types/api.types'
 import type {
   CreateMemberDocumentRequest,
   MemberDocument,
   UpdateMemberDocumentRequest,
-} from '@/features/document/types/document.types'
+} from '@/features/member/documents/types/document.types'
 
 export const documentService = {
   getAll: async (): Promise<MemberDocument[]> => {
@@ -21,11 +22,18 @@ export const documentService = {
     return unwrap(response)
   },
 
-  getByMemberId: async (memberId: number): Promise<MemberDocument> => {
-    const response = await api.get<ApiResponse<MemberDocument>>(
-      ENDPOINTS.documents.byMemberId(memberId),
-    )
-    return unwrap(response)
+  getByMemberId: async (memberId: number): Promise<MemberDocument | null> => {
+    try {
+      const response = await api.get<ApiResponse<MemberDocument>>(
+        ENDPOINTS.documents.byMemberId(memberId),
+      )
+      return unwrap(response)
+    } catch (error) {
+      if (axios.isAxiosError(error) && error.response?.status === 404) {
+        return null
+      }
+      throw error
+    }
   },
 
   create: async (payload: CreateMemberDocumentRequest): Promise<number> => {

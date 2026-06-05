@@ -20,9 +20,9 @@ export interface FormSelectOption {
   label: string
 }
 
-interface FormSelectFieldProps<T extends FieldValues> {
-  control: Control<T>
-  name: FieldPath<T>
+interface FormSelectFieldProps<T extends FieldValues = FieldValues> {
+  control: Control<FieldValues>
+  name: string
   label: string
   options: FormSelectOption[]
   placeholder?: string

@@ -22,10 +22,14 @@ public class OrganizationMemberDocumentService(IOrganizationMemberDocumentReposi
         var existingDocument = await _organizationMemberDocumentRepository.GetByIdAsync(id)
             ?? throw new Exception("Organization member document not found");
 
-        existingDocument.MemberPhoto = organizationMemberDocument.MemberPhoto;
-        existingDocument.AadhaarCopy = organizationMemberDocument.AadhaarCopy;
-        existingDocument.PANCopy = organizationMemberDocument.PANCopy;
-        existingDocument.DeathCertificate = organizationMemberDocument.DeathCertificate;
+        if (organizationMemberDocument.MemberPhoto is not null)
+            existingDocument.MemberPhoto = organizationMemberDocument.MemberPhoto;
+        if (organizationMemberDocument.AadhaarCopy is not null)
+            existingDocument.AadhaarCopy = organizationMemberDocument.AadhaarCopy;
+        if (organizationMemberDocument.PANCopy is not null)
+            existingDocument.PANCopy = organizationMemberDocument.PANCopy;
+        if (organizationMemberDocument.DeathCertificate is not null)
+            existingDocument.DeathCertificate = organizationMemberDocument.DeathCertificate;
         existingDocument.EditByTime = DateTime.UtcNow;
 
         await _organizationMemberDocumentRepository.UpdateAsync(existingDocument);

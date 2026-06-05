@@ -44,6 +44,7 @@ export interface Member extends AuditFields {
 }
 
 export interface CreateMemberRequest {
+  nameTitleID?: number | null
   firstName: string
   lastName?: string | null
   middleName?: string | null
@@ -70,9 +71,12 @@ export interface CreateMemberRequest {
   registrationDate?: string | null
   memberSectionID?: number | null
   organizationMemberCenterID?: number | null
+  isTransfer?: boolean
+  transferOrganizationMemberID?: number | null
 }
 
 export interface UpdateMemberRequest {
+  nameTitleID?: number | null
   firstName: string
   lastName?: string | null
   middleName?: string | null

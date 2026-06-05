@@ -16,7 +16,7 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card'
-import { useDocumentsQuery } from '@/features/document/hooks'
+import { useDocumentsQuery } from '@/features/member/documents/hooks'
 import { useMembersQuery } from '@/features/member/hooks'
 import { useMemberCentersQuery } from '@/features/memberCenter/hooks'
 import { useMemberSectionsQuery } from '@/features/memberSection/hooks'

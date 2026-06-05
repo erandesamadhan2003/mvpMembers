@@ -15,7 +15,9 @@ import { ROUTES } from '@/constants/routes.constants'
 import { formatDisplayDate } from '@/utils/date'
 import { useMemberQuery } from '@/features/member/hooks'
 import { MemberFormDialog } from '@/features/member/components/MemberFormDialog'
-import { DocumentUploadPanel } from '@/features/document/components/DocumentUploadPanel'
+import { DocumentUploadPanel } from '@/features/member/documents/components/DocumentUploadPanel'
+import { getNameTitleLabel } from '@/features/member/constants/nameTitles.constants'
+import { getMemberStatusLabel } from '@/features/member/utils/memberStatus'
 
 function DetailField({
   label,
@@ -98,11 +100,13 @@ export const MemberDetailPage = memo(function MemberDetailPage() {
         description={`Member No: ${member.memberNo ?? 'N/A'}`}
         actions={
           <div className="flex items-center gap-2">
-            {member.death ? (
-              <Badge variant="destructive">Deceased</Badge>
-            ) : (
-              <Badge variant="success">Active</Badge>
-            )}
+            {(() => {
+              const status = getMemberStatusLabel(member)
+              if (status === 'Deceased') return <Badge variant="destructive">Deceased</Badge>
+              if (status === 'Inactive') return <Badge variant="outline">Inactive</Badge>
+              if (status === 'Active') return <Badge variant="success">Active</Badge>
+              return <Badge variant="secondary">Pending</Badge>
+            })()}
             <Button variant="outline" onClick={handleEditToggle} type="button">
               <Pencil className="size-4" aria-hidden />
               {editMode ? 'Save via Form' : 'Edit'}
@@ -128,6 +132,7 @@ export const MemberDetailPage = memo(function MemberDetailPage() {
 
         <TabsContent value="personal" className="space-y-4">
           <DetailSection title="Personal Information">
+            <DetailField label="Title" value={getNameTitleLabel(member.nameTitleID)} />
             <DetailField label="First Name" value={member.firstName} />
             <DetailField label="Middle Name" value={member.middleName} />
             <DetailField label="Last Name" value={member.lastName} />
@@ -143,16 +148,18 @@ export const MemberDetailPage = memo(function MemberDetailPage() {
         </TabsContent>
 
         <TabsContent value="address" className="space-y-4">
-          <DetailSection title="Address Information">
+          <DetailSection title="Current / Temporary Address">
             <DetailField label="City" value={member.city} />
             <DetailField label="Taluka" value={member.taluka} />
             <DetailField label="District" value={member.district} />
             <DetailField label="State" value={member.states} />
             <DetailField label="PIN Code" value={member.pinCode} />
-            <DetailField label="Permanent City" value={member.pCity} />
-            <DetailField label="Permanent Taluka" value={member.pTaluka} />
-            <DetailField label="Permanent District" value={member.pDistrict} />
-            <DetailField label="Permanent PIN" value={member.pPinCode} />
+          </DetailSection>
+          <DetailSection title="Permanent Address">
+            <DetailField label="City" value={member.pCity} />
+            <DetailField label="Taluka" value={member.pTaluka} />
+            <DetailField label="District" value={member.pDistrict} />
+            <DetailField label="PIN Code" value={member.pPinCode} />
           </DetailSection>
         </TabsContent>
 

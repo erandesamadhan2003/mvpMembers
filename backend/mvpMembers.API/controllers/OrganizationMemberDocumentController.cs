@@ -55,10 +55,10 @@ public class OrganizationMemberDocumentController(IOrganizationMemberDocumentSer
             var document = new OrganizationMemberDocument
             {
                 OrganizationMemberID = request.OrganizationMemberID,
-                MemberPhoto = request.MemberPhoto,
-                AadhaarCopy = request.AadhaarCopy,
-                PANCopy = request.PANCopy,
-                DeathCertificate = request.DeathCertificate,
+                MemberPhoto = DocumentEncodingHelper.DecodeBase64(request.MemberPhoto),
+                AadhaarCopy = DocumentEncodingHelper.DecodeBase64(request.AadhaarCopy),
+                PANCopy = DocumentEncodingHelper.DecodeBase64(request.PanCopy),
+                DeathCertificate = DocumentEncodingHelper.DecodeBase64(request.DeathCertificate),
                 AddByTime = DateTime.UtcNow
             };
 
@@ -79,10 +79,10 @@ public class OrganizationMemberDocumentController(IOrganizationMemberDocumentSer
             var document = new OrganizationMemberDocument
             {
                 OrganizationMemberID = request.OrganizationMemberID,
-                MemberPhoto = request.MemberPhoto,
-                AadhaarCopy = request.AadhaarCopy,
-                PANCopy = request.PANCopy,
-                DeathCertificate = request.DeathCertificate
+                MemberPhoto = DocumentEncodingHelper.DecodeBase64(request.MemberPhoto),
+                AadhaarCopy = DocumentEncodingHelper.DecodeBase64(request.AadhaarCopy),
+                PANCopy = DocumentEncodingHelper.DecodeBase64(request.PanCopy),
+                DeathCertificate = DocumentEncodingHelper.DecodeBase64(request.DeathCertificate)
             };
 
             await _organizationMemberDocumentService.UpdateAsync(id, document);
@@ -112,17 +112,29 @@ public class OrganizationMemberDocumentController(IOrganizationMemberDocumentSer
 public class CreateOrganizationMemberDocumentRequest
 {
     public long OrganizationMemberID { get; set; }
-    public byte[]? MemberPhoto { get; set; }
-    public byte[]? AadhaarCopy { get; set; }
-    public byte[]? PANCopy { get; set; }
-    public byte[]? DeathCertificate { get; set; }
+    public string? MemberPhoto { get; set; }
+    public string? AadhaarCopy { get; set; }
+    public string? PanCopy { get; set; }
+    public string? DeathCertificate { get; set; }
 }
 
 public class UpdateOrganizationMemberDocumentRequest
 {
     public long OrganizationMemberID { get; set; }
-    public byte[]? MemberPhoto { get; set; }
-    public byte[]? AadhaarCopy { get; set; }
-    public byte[]? PANCopy { get; set; }
-    public byte[]? DeathCertificate { get; set; }
+    public string? MemberPhoto { get; set; }
+    public string? AadhaarCopy { get; set; }
+    public string? PanCopy { get; set; }
+    public string? DeathCertificate { get; set; }
+}
+
+internal static class DocumentEncodingHelper
+{
+    internal static byte[]? DecodeBase64(string? value)
+    {
+        if (string.IsNullOrWhiteSpace(value))
+            return null;
+
+        var base64 = value.Contains(',') ? value.Split(',')[1] : value.Trim();
+        return Convert.FromBase64String(base64);
+    }
 }

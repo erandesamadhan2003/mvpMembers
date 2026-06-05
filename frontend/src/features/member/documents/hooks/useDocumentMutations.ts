@@ -1,10 +1,10 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { documentKeys } from '@/features/document/hooks/document.keys'
-import { documentService } from '@/features/document/services/document.service'
+import { documentKeys } from '@/features/member/documents/hooks/document.keys'
+import { documentService } from '@/features/member/documents/services/document.service'
 import type {
   CreateMemberDocumentRequest,
   UpdateMemberDocumentRequest,
-} from '@/features/document/types/document.types'
+} from '@/features/member/documents/types/document.types'
 
 function invalidateDocuments(queryClient: ReturnType<typeof useQueryClient>) {
   return queryClient.invalidateQueries({ queryKey: documentKeys.all })

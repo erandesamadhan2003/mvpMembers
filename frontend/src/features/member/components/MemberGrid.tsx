@@ -17,6 +17,7 @@ import {
   useMembersQuery,
 } from '@/features/member/hooks'
 import type { Member } from '@/features/member/types/member.types'
+import { getMemberStatusLabel, isMemberActive } from '@/features/member/utils/memberStatus'
 import { getApiErrorMessage } from '@/api'
 
 function memberFullName(m: Member) {
@@ -26,8 +27,10 @@ function memberFullName(m: Member) {
 function MemberStatusCell(params: ICellRendererParams<Member>) {
   const row = params.data
   if (!row) return null
-  if (row.death) return <Badge variant="destructive">Deceased</Badge>
-  if (row.memberCardIssue) return <Badge variant="success">Active</Badge>
+  const status = getMemberStatusLabel(row)
+  if (status === 'Deceased') return <Badge variant="destructive">Deceased</Badge>
+  if (status === 'Inactive') return <Badge variant="outline">Inactive</Badge>
+  if (status === 'Active') return <Badge variant="success">Active</Badge>
   return <Badge variant="secondary">Pending</Badge>
 }
 
@@ -56,10 +59,8 @@ function MemberActionsCell(
 }
 
 export const MemberGrid = memo(function MemberGrid({
-  onAdd,
   onEdit,
 }: {
-  onAdd: () => void
   onEdit: (member: Member) => void
 }) {
   const navigate = useNavigate()
@@ -68,6 +69,12 @@ export const MemberGrid = memo(function MemberGrid({
   const { data = [], isLoading, isError, error } = useMembersQuery()
   const deleteMutation = useDeleteMemberMutation()
   const [deleteTarget, setDeleteTarget] = useState<Member | null>(null)
+  const [showAll, setShowAll] = useState(false)
+
+  const rowData = useMemo(
+    () => (showAll ? data : data.filter(isMemberActive)),
+    [data, showAll],
+  )
 
   const handleView = useCallback(
     (member: Member) => navigate(ROUTES.memberDetail(member.organizationMemberID)),
@@ -135,12 +142,16 @@ export const MemberGrid = memo(function MemberGrid({
           onExport={() => exportGridToCsv(gridApiRef.current, 'members')}
           actions={
             <>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => setShowAll((v) => !v)}
+              >
+                {showAll ? 'Show Active Only' : 'Show All Members'}
+              </Button>
               <Link to={ROUTES.memberCreate}>
-                <Button variant="outline" type="button">
-                  Add Member
-                </Button>
+                <Button type="button">Register Member</Button>
               </Link>
-              <Button onClick={onAdd}>Quick Add</Button>
             </>
           }
         />
@@ -148,7 +159,7 @@ export const MemberGrid = memo(function MemberGrid({
           <p className="text-sm text-destructive">{getApiErrorMessage(error)}</p>
         ) : null}
         <AgDataGrid
-          rowData={data}
+          rowData={rowData}
           columnDefs={columnDefs}
           loading={isLoading}
           quickFilterText={quickFilterText}
