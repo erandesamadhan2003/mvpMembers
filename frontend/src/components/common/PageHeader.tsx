@@ -21,8 +21,8 @@ export const PageHeader = memo(function PageHeader({
         className,
       )}
     >
-      <div className="space-y-1">
-        <h1 className="text-3xl font-semibold tracking-tight text-foreground">
+      <div className="">
+        <h1 className="text-2xl font-semibold tracking-tight">
           {title}
         </h1>
         {description ? (

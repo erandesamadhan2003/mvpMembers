@@ -5,8 +5,6 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { LoadingSpinner } from '@/components/common'
 import { useDocumentByMemberQuery } from '@/features/member/documents/hooks'
 import type { Member } from '@/features/member/types/member.types'
-import { getNameTitleLabel } from '@/features/member/constants/nameTitles.constants'
-import { formatMemberFullName } from '@/features/member/utils/memberDisplay'
 import {
   openDocumentInNewWindow,
   toDocumentDataUrl,

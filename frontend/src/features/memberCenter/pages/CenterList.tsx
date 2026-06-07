@@ -9,10 +9,7 @@ export const CenterList = memo(function CenterList() {
 
   return (
     <PageContainer>
-      <PageHeader
-        title="Member Centers"
-        description="Select a center, then use View, Update, or Delete from the toolbar."
-      />
+      <PageHeader title="Member Centers" description="Manage centers linked to member towns." />
       <CenterGrid onAdd={handleAdd} />
       <CenterFormDialog open={createOpen} onOpenChange={setCreateOpen} />
     </PageContainer>

@@ -82,7 +82,7 @@ export const MemberFormFields = memo(function MemberFormFields({
 
   return (
     <Tabs defaultValue="personal" className="w-full">
-      <TabsList className="w-full justify-start">
+      <TabsList className="w-full justify-start bg-orange-300">
         <TabsTrigger value="personal">Personal</TabsTrigger>
         <TabsTrigger value="address">Address</TabsTrigger>
         <TabsTrigger value="membership">Membership</TabsTrigger>

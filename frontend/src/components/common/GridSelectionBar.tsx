@@ -17,9 +17,6 @@ interface GridSelectionBarProps {
 }
 
 export const GridSelectionBar = memo(function GridSelectionBar({
-  selectedLabel,
-  selectedMeta,
-  emptyLabel,
   hasSelection,
   onView,
   onEdit,
