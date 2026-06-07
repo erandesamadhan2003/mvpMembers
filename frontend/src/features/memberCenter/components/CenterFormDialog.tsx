@@ -25,31 +25,30 @@ const schema = z.object({
   organizationMemberTownID: z.coerce.number().positive('Town is required'),
 })
 
-// Input type uses string | number since the select gives a string before coercion
 type FormInput = {
   centerName: string
   organizationMemberTownID: number | string
 }
-// Output type is the fully validated/coerced shape
 type FormValues = z.output<typeof schema>
 
 interface CenterFormDialogProps {
   open: boolean
   onOpenChange: (open: boolean) => void
   center?: MemberCenter | null
+  readOnly?: boolean
 }
 
 export const CenterFormDialog = memo(function CenterFormDialog({
   open,
   onOpenChange,
   center,
+  readOnly = false,
 }: CenterFormDialogProps) {
   const isEdit = Boolean(center)
   const { data: towns = [] } = useMemberTownsQuery()
   const createMutation = useCreateMemberCenterMutation()
   const updateMutation = useUpdateMemberCenterMutation()
 
-  // TFieldValues = FormInput (raw), TContext = any, TTransformedValues = FormValues (coerced)
   const form = useForm<FormInput, any, FormValues>({
     resolver: zodResolver(schema) as Resolver<FormInput, any, FormValues>,
     defaultValues: {
@@ -98,46 +97,104 @@ export const CenterFormDialog = memo(function CenterFormDialog({
 
   const pending = createMutation.isPending || updateMutation.isPending
   const townValue = String(form.watch('organizationMemberTownID') || '')
+  const title = readOnly
+    ? 'View Member Center'
+    : isEdit
+      ? 'Update Member Center'
+      : 'Add Member Center'
+
+  const fieldClass =
+    'flex h-10 w-full rounded-md border border-border bg-muted/40 px-3 text-base text-foreground'
+  const inputClass = 'h-10 text-base md:text-base'
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-lg">
         <DialogHeader>
-          <DialogTitle>{isEdit ? 'Edit Member Center' : 'Add Member Center'}</DialogTitle>
+          <DialogTitle>{title}</DialogTitle>
         </DialogHeader>
-        <form onSubmit={onSubmit} className="grid gap-4 sm:grid-cols-2">
-          <div className="space-y-2 sm:col-span-2">
-            <Label htmlFor="center-name">Center Name</Label>
-            <Input id="center-name" {...form.register('centerName')} />
-          </div>
-          <div className="space-y-2 sm:col-span-2">
-            <Label htmlFor="center-town">Town</Label>
-            <select
-              id="center-town"
-              className="flex h-9 w-full rounded-md border border-input bg-card px-3 text-sm"
-              value={townValue}
-              onChange={(e) =>
-                form.setValue('organizationMemberTownID', e.target.value)
-              }
-              aria-label="Select town"
-            >
-              <option value="">Select town</option>
-              {townOptions.map((opt) => (
-                <option key={opt.value} value={opt.value}>
-                  {opt.label}
+        {readOnly ? (
+          <div className="grid gap-4 sm:grid-cols-2">
+            <div className="space-y-2 sm:col-span-2">
+              <Label htmlFor="center-name" className="text-base">
+                Center Name
+              </Label>
+              <Input
+                id="center-name"
+                className={`${inputClass} bg-muted/40`}
+                readOnly
+                value={center?.centerName ?? ''}
+              />
+            </div>
+            <div className="space-y-2 sm:col-span-2">
+              <Label htmlFor="center-town" className="text-base">
+                Town
+              </Label>
+              <select
+                id="center-town"
+                className={fieldClass}
+                disabled
+                value={String(center?.organizationMemberTownID ?? '')}
+              >
+                <option value="">
+                  {center?.organizationMemberTown?.townName ?? '—'}
                 </option>
-              ))}
-            </select>
+              </select>
+            </div>
+            <DialogFooter className="sm:col-span-2">
+              <Button type="button" onClick={() => onOpenChange(false)}>
+                Close
+              </Button>
+            </DialogFooter>
           </div>
-          <DialogFooter className="sm:col-span-2">
-            <Button type="button" variant="outline" onClick={() => onOpenChange(false)} disabled={pending}>
-              Cancel
-            </Button>
-            <Button type="submit" disabled={pending}>
-              {pending ? 'Saving...' : isEdit ? 'Update' : 'Create'}
-            </Button>
-          </DialogFooter>
-        </form>
+        ) : (
+          <form onSubmit={onSubmit} className="grid gap-4 sm:grid-cols-2">
+            <div className="space-y-2 sm:col-span-2">
+              <Label htmlFor="center-name" className="text-base">
+                Center Name
+              </Label>
+              <Input
+                id="center-name"
+                className={inputClass}
+                {...form.register('centerName')}
+              />
+            </div>
+            <div className="space-y-2 sm:col-span-2">
+              <Label htmlFor="center-town" className="text-base">
+                Town
+              </Label>
+              <select
+                id="center-town"
+                className="flex h-10 w-full rounded-md border border-input bg-card px-3 text-base"
+                value={townValue}
+                onChange={(e) =>
+                  form.setValue('organizationMemberTownID', e.target.value)
+                }
+                aria-label="Select town"
+              >
+                <option value="">Select town</option>
+                {townOptions.map((opt) => (
+                  <option key={opt.value} value={opt.value}>
+                    {opt.label}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <DialogFooter className="sm:col-span-2">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => onOpenChange(false)}
+                disabled={pending}
+              >
+                Cancel
+              </Button>
+              <Button type="submit" disabled={pending}>
+                {pending ? 'Saving...' : isEdit ? 'Update' : 'Create'}
+              </Button>
+            </DialogFooter>
+          </form>
+        )}
       </DialogContent>
     </Dialog>
   )

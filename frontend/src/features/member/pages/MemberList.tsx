@@ -31,8 +31,7 @@ export const MemberList = memo(function MemberList() {
   return (
     <PageContainer>
       <PageHeader
-        title="Members"
-        description="Select a member from the list, then use View, Update, or Delete."
+        title=""
       />
       <MemberGrid onView={handleView} onEdit={handleEdit} />
       <MemberRecordDialog

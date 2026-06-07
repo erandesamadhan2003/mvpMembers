@@ -12,7 +12,7 @@ export const SectionList = memo(function SectionList() {
     <PageContainer>
       <PageHeader
         title="Member Sections"
-        description="Manage organization member sections used for membership grouping."
+        description="Select a section, then use View, Update, or Delete from the toolbar."
       />
       <SectionGrid onAdd={handleAdd} />
       <SectionFormDialog

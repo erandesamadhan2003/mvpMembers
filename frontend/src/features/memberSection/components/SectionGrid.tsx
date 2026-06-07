@@ -1,10 +1,10 @@
 import { memo, useCallback, useMemo, useRef, useState } from 'react'
-import type { ColDef, GridApi, ICellRendererParams } from 'ag-grid-community'
-import { Pencil, Trash2 } from 'lucide-react'
+import type { ColDef, GridApi } from 'ag-grid-community'
 import { AgDataGrid } from '@/components/grid/AgDataGrid'
 import { exportGridToCsv } from '@/components/grid/exportCsv'
 import { useGridQuickFilter } from '@/components/grid/useGridQuickFilter'
 import { GridToolbar } from '@/components/common/GridToolbar'
+import { GridSelectionBar } from '@/components/common/GridSelectionBar'
 import { ConfirmDialog } from '@/components/common/ConfirmDialog'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
@@ -16,40 +16,10 @@ import type { MemberSection } from '@/features/memberSection/types/memberSection
 import { SectionFormDialog } from '@/features/memberSection/components/SectionFormDialog'
 import { getApiErrorMessage } from '@/api'
 
+type DialogMode = 'view' | 'edit' | null
+
 interface SectionGridProps {
   onAdd: () => void
-}
-
-function SectionActionsCell(
-  params: ICellRendererParams<MemberSection> & {
-    onEdit: (row: MemberSection) => void
-    onDelete: (row: MemberSection) => void
-  },
-) {
-  const row = params.data
-  if (!row) return null
-  return (
-    <div className="flex h-full items-center gap-1">
-      <Button
-        type="button"
-        variant="ghost"
-        size="icon-xs"
-        aria-label={`Edit ${row.memberSectionName}`}
-        onClick={() => params.onEdit(row)}
-      >
-        <Pencil className="size-3.5" />
-      </Button>
-      <Button
-        type="button"
-        variant="ghost"
-        size="icon-xs"
-        aria-label={`Delete ${row.memberSectionName}`}
-        onClick={() => params.onDelete(row)}
-      >
-        <Trash2 className="size-3.5 text-destructive" />
-      </Button>
-    </div>
-  )
 }
 
 export const SectionGrid = memo(function SectionGrid({ onAdd }: SectionGridProps) {
@@ -58,56 +28,40 @@ export const SectionGrid = memo(function SectionGrid({ onAdd }: SectionGridProps
   const { data = [], isLoading, isError, error, refetch } = useMemberSectionsQuery()
   const deleteMutation = useDeleteMemberSectionMutation()
 
-  const [formOpen, setFormOpen] = useState(false)
-  const [editing, setEditing] = useState<MemberSection | null>(null)
+  const [selected, setSelected] = useState<MemberSection | null>(null)
+  const [dialogMode, setDialogMode] = useState<DialogMode>(null)
   const [deleteTarget, setDeleteTarget] = useState<MemberSection | null>(null)
-
-  const handleEdit = useCallback((section: MemberSection) => {
-    setEditing(section)
-    setFormOpen(true)
-  }, [])
-
-  const handleDelete = useCallback(async () => {
-    if (!deleteTarget) return
-    try {
-      await deleteMutation.mutateAsync(deleteTarget.memberSectionID)
-      setDeleteTarget(null)
-    } catch {
-      /* mutation error surfaced via dialog state */
-    }
-  }, [deleteMutation, deleteTarget])
 
   const columnDefs = useMemo<ColDef<MemberSection>[]>(
     () => [
       {
         field: 'memberSectionID',
         headerName: 'ID',
-        maxWidth: 100,
+        minWidth: 100,
+        maxWidth: 120,
         filter: 'agNumberColumnFilter',
       },
       {
         field: 'memberSectionName',
         headerName: 'Section Name',
         flex: 2,
-      },
-      {
-        headerName: 'Actions',
-        sortable: false,
-        filter: false,
-        maxWidth: 140,
-        pinned: 'right',
-        cellRenderer: SectionActionsCell,
-        cellRendererParams: {
-          onEdit: handleEdit,
-          onDelete: setDeleteTarget,
-        },
+        minWidth: 200,
+        cellClass: 'font-medium',
       },
     ],
-    [handleEdit],
+    [],
   )
 
+  const handleSelectionChanged = useCallback((rows: MemberSection[]) => {
+    setSelected(rows[0] ?? null)
+  }, [])
+
+  const openDialog = useCallback((mode: DialogMode) => {
+    if (selected) setDialogMode(mode)
+  }, [selected])
+
   return (
-    <Card>
+    <Card className="border-border/80 shadow-sm">
       <CardContent className="space-y-4 pt-6">
         <GridToolbar
           search={search}
@@ -120,19 +74,34 @@ export const SectionGrid = memo(function SectionGrid({ onAdd }: SectionGridProps
             </Button>
           }
         />
+
+        <GridSelectionBar
+          hasSelection={Boolean(selected)}
+          selectedLabel={selected?.memberSectionName ?? null}
+          selectedMeta={selected ? `ID ${selected.memberSectionID}` : null}
+          emptyLabel="Select a row to view, update, or delete a section."
+          onView={() => openDialog('view')}
+          onEdit={() => openDialog('edit')}
+          onDelete={() => selected && setDeleteTarget(selected)}
+        />
+
         {isError ? (
-          <p className="text-sm text-destructive" role="alert">
+          <p className="text-base text-destructive" role="alert">
             {getApiErrorMessage(error)}
             <Button variant="link" className="ml-2" onClick={() => refetch()}>
               Retry
             </Button>
           </p>
         ) : null}
+
         <AgDataGrid<MemberSection>
           columnDefs={columnDefs}
           rowData={data}
           loading={isLoading}
           quickFilterText={quickFilterText}
+          height={580}
+          rowSelection
+          onSelectionChanged={handleSelectionChanged}
           onGridReady={(api) => {
             gridApiRef.current = api
           }}
@@ -140,12 +109,10 @@ export const SectionGrid = memo(function SectionGrid({ onAdd }: SectionGridProps
       </CardContent>
 
       <SectionFormDialog
-        open={formOpen}
-        onOpenChange={(open) => {
-          setFormOpen(open)
-          if (!open) setEditing(null)
-        }}
-        section={editing}
+        open={dialogMode !== null}
+        onOpenChange={(open) => !open && setDialogMode(null)}
+        section={selected}
+        readOnly={dialogMode === 'view'}
       />
 
       <ConfirmDialog
@@ -156,7 +123,12 @@ export const SectionGrid = memo(function SectionGrid({ onAdd }: SectionGridProps
         confirmLabel="Delete"
         destructive
         loading={deleteMutation.isPending}
-        onConfirm={handleDelete}
+        onConfirm={async () => {
+          if (!deleteTarget) return
+          await deleteMutation.mutateAsync(deleteTarget.memberSectionID)
+          setDeleteTarget(null)
+          setSelected(null)
+        }}
       />
     </Card>
   )

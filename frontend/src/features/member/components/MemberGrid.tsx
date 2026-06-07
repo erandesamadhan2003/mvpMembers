@@ -1,11 +1,11 @@
 import { memo, useCallback, useMemo, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import type { ColDef, GridApi } from 'ag-grid-community'
-import { Eye, Pencil, Trash2 } from 'lucide-react'
 import { AgDataGrid } from '@/components/grid/AgDataGrid'
 import { exportGridToCsv } from '@/components/grid/exportCsv'
 import { useGridQuickFilter } from '@/components/grid/useGridQuickFilter'
 import { GridToolbar } from '@/components/common/GridToolbar'
+import { GridSelectionBar } from '@/components/common/GridSelectionBar'
 import { ConfirmDialog } from '@/components/common/ConfirmDialog'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
@@ -15,6 +15,7 @@ import {
   useDeleteMemberMutation,
   useMembersQuery,
 } from '@/features/member/hooks'
+import { MemberSelectionPreview } from '@/features/member/components/MemberSelectionPreview'
 import type { Member } from '@/features/member/types/member.types'
 import { isMemberActive } from '@/features/member/utils/memberStatus'
 import { getApiErrorMessage } from '@/api'
@@ -119,78 +120,50 @@ export const MemberGrid = memo(function MemberGrid({
           searchPlaceholder="Search members by name, number, email..."
           onExport={() => exportGridToCsv(gridApiRef.current, 'members')}
           actions={
-            <>
-              <Button
-                type="button"
-                variant="outline"
-                disabled={!selected}
-                onClick={() => requireSelection(onView)}
-              >
-                <Eye className="size-4" aria-hidden />
-                View
-              </Button>
-              <Button
-                type="button"
-                variant="outline"
-                disabled={!selected}
-                onClick={() => requireSelection(onEdit)}
-              >
-                <Pencil className="size-4" aria-hidden />
-                Update
-              </Button>
-              <Button
-                type="button"
-                variant="outline"
-                disabled={!selected}
-                className="text-destructive hover:text-destructive"
-                onClick={() => requireSelection(setDeleteTarget)}
-              >
-                <Trash2 className="size-4" aria-hidden />
-                Delete
-              </Button>
-              <Button
-                type="button"
-                variant="secondary"
-                onClick={() => setShowAll((v) => !v)}
-              >
-                {showAll ? 'Active Only' : 'Show All'}
-              </Button>
-              <Link to={ROUTES.memberCreate}>
-                <Button type="button">Register Member</Button>
-              </Link>
-            </>
+            <Link to={ROUTES.memberCreate}>
+              <Button type="button">Register Member</Button>
+            </Link>
           }
         />
 
-        {selected ? (
-          <p className="rounded-md border border-primary/20 bg-primary/5 px-4 py-2.5 text-base text-foreground">
-            Selected: <span className="font-semibold">{memberFullName(selected)}</span>
-            {selected.memberNo ? (
-              <span className="text-muted-foreground"> · {selected.memberNo}</span>
-            ) : null}
-          </p>
-        ) : (
-          <p className="text-base text-muted-foreground">
-            Select a row to view, update, or delete a member.
-          </p>
-        )}
+        <GridSelectionBar
+          hasSelection={Boolean(selected)}
+          selectedLabel={selected ? memberFullName(selected) : null}
+          selectedMeta={selected?.memberNo ?? null}
+          emptyLabel=""
+          onView={() => requireSelection(onView)}
+          onEdit={() => requireSelection(onEdit)}
+          onDelete={() => requireSelection(setDeleteTarget)}
+          extraActions={
+            <Button
+              type="button"
+              variant="secondary"
+              onClick={() => setShowAll((v) => !v)}
+            >
+              {showAll ? 'Active Only' : 'Show All'}
+            </Button>
+          }
+        />
 
         {isError ? (
           <p className="text-base text-destructive">{getApiErrorMessage(error)}</p>
         ) : null}
 
-        <AgDataGrid
-          rowData={rowData}
-          columnDefs={columnDefs}
-          loading={isLoading}
-          quickFilterText={quickFilterText}
-          height={580}
-          rowSelection
-          onSelectionChanged={handleSelectionChanged}
-          onGridReady={(api) => {
-            gridApiRef.current = api
-          }}
-        />
+        <div className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_300px]">
+          <AgDataGrid
+            rowData={rowData}
+            columnDefs={columnDefs}
+            loading={isLoading}
+            quickFilterText={quickFilterText}
+            height={600}
+            rowSelection
+            onSelectionChanged={handleSelectionChanged}
+            onGridReady={(api) => {
+              gridApiRef.current = api
+            }}
+          />
+          <MemberSelectionPreview member={selected} />
+        </div>
       </CardContent>
 
       <ConfirmDialog

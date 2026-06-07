@@ -29,12 +29,14 @@ interface SectionFormDialogProps {
   open: boolean
   onOpenChange: (open: boolean) => void
   section?: MemberSection | null
+  readOnly?: boolean
 }
 
 export const SectionFormDialog = memo(function SectionFormDialog({
   open,
   onOpenChange,
   section,
+  readOnly = false,
 }: SectionFormDialogProps) {
   const isEdit = Boolean(section)
   const createMutation = useCreateMemberSectionMutation()
@@ -68,44 +70,71 @@ export const SectionFormDialog = memo(function SectionFormDialog({
   })
 
   const pending = createMutation.isPending || updateMutation.isPending
+  const title = readOnly
+    ? 'View Member Section'
+    : isEdit
+      ? 'Update Member Section'
+      : 'Add Member Section'
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle>
-            {isEdit ? 'Edit Member Section' : 'Add Member Section'}
-          </DialogTitle>
+          <DialogTitle>{title}</DialogTitle>
         </DialogHeader>
-        <form onSubmit={onSubmit} className="space-y-4">
-          <div className="space-y-2">
-            <Label htmlFor="section-name">Section Name</Label>
-            <Input
-              id="section-name"
-              {...form.register('name')}
-              aria-invalid={Boolean(form.formState.errors.name)}
-              placeholder="Enter section name"
-            />
-            {form.formState.errors.name ? (
-              <p className="text-sm text-destructive" role="alert">
-                {form.formState.errors.name.message}
-              </p>
-            ) : null}
+        {readOnly ? (
+          <div className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="section-name" className="text-base">
+                Section Name
+              </Label>
+              <Input
+                id="section-name"
+                className="h-10 text-base md:text-base bg-muted/40"
+                readOnly
+                value={section?.memberSectionName ?? ''}
+              />
+            </div>
+            <DialogFooter>
+              <Button type="button" onClick={() => onOpenChange(false)}>
+                Close
+              </Button>
+            </DialogFooter>
           </div>
-          <DialogFooter>
-            <Button
-              type="button"
-              variant="outline"
-              onClick={() => onOpenChange(false)}
-              disabled={pending}
-            >
-              Cancel
-            </Button>
-            <Button type="submit" disabled={pending}>
-              {pending ? 'Saving...' : isEdit ? 'Update' : 'Create'}
-            </Button>
-          </DialogFooter>
-        </form>
+        ) : (
+          <form onSubmit={onSubmit} className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="section-name" className="text-base">
+                Section Name
+              </Label>
+              <Input
+                id="section-name"
+                className="h-10 text-base md:text-base"
+                {...form.register('name')}
+                aria-invalid={Boolean(form.formState.errors.name)}
+                placeholder="Enter section name"
+              />
+              {form.formState.errors.name ? (
+                <p className="text-sm text-destructive" role="alert">
+                  {form.formState.errors.name.message}
+                </p>
+              ) : null}
+            </div>
+            <DialogFooter>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => onOpenChange(false)}
+                disabled={pending}
+              >
+                Cancel
+              </Button>
+              <Button type="submit" disabled={pending}>
+                {pending ? 'Saving...' : isEdit ? 'Update' : 'Create'}
+              </Button>
+            </DialogFooter>
+          </form>
+        )}
       </DialogContent>
     </Dialog>
   )

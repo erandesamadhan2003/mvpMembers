@@ -19,7 +19,6 @@ export const MemberCreatePage = memo(function MemberCreatePage() {
     <PageContainer>
       <PageHeader
         title="Register Member"
-        description="Complete member details, register, then upload documents."
         actions={
           <Link to={ROUTES.members}>
             <Button variant="ghost" type="button">

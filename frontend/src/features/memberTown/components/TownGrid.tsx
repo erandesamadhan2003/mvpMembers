@@ -1,10 +1,10 @@
 import { memo, useCallback, useMemo, useRef, useState } from 'react'
-import type { ColDef, GridApi, ICellRendererParams } from 'ag-grid-community'
-import { Pencil, Trash2 } from 'lucide-react'
+import type { ColDef, GridApi } from 'ag-grid-community'
 import { AgDataGrid } from '@/components/grid/AgDataGrid'
 import { exportGridToCsv } from '@/components/grid/exportCsv'
 import { useGridQuickFilter } from '@/components/grid/useGridQuickFilter'
 import { GridToolbar } from '@/components/common/GridToolbar'
+import { GridSelectionBar } from '@/components/common/GridSelectionBar'
 import { ConfirmDialog } from '@/components/common/ConfirmDialog'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
@@ -16,60 +16,42 @@ import type { MemberTown } from '@/features/memberTown/types/memberTown.types'
 import { TownFormDialog } from '@/features/memberTown/components/TownFormDialog'
 import { getApiErrorMessage } from '@/api'
 
-function TownActionsCell(
-  params: ICellRendererParams<MemberTown> & {
-    onEdit: (row: MemberTown) => void
-    onDelete: (row: MemberTown) => void
-  },
-) {
-  const row = params.data
-  if (!row) return null
-  return (
-    <div className="flex h-full items-center gap-1">
-      <Button type="button" variant="ghost" size="icon-xs" onClick={() => params.onEdit(row)}>
-        <Pencil className="size-3.5" />
-      </Button>
-      <Button type="button" variant="ghost" size="icon-xs" onClick={() => params.onDelete(row)}>
-        <Trash2 className="size-3.5 text-destructive" />
-      </Button>
-    </div>
-  )
-}
+type DialogMode = 'view' | 'edit' | null
 
 export const TownGrid = memo(function TownGrid({ onAdd }: { onAdd: () => void }) {
-  const gridApiRef = useRef<GridApi<MemberTown> | undefined>(undefined)
+  const gridApiRef = useRef<GridApi<MemberTown> | null>(null)
   const { search, setSearch, quickFilterText } = useGridQuickFilter()
   const { data = [], isLoading, isError, error } = useMemberTownsQuery()
   const deleteMutation = useDeleteMemberTownMutation()
-  const [formOpen, setFormOpen] = useState(false)
-  const [editing, setEditing] = useState<MemberTown | null>(null)
-  const [deleteTarget, setDeleteTarget] = useState<MemberTown | null>(null)
 
-  const handleEdit = useCallback((town: MemberTown) => {
-    setEditing(town)
-    setFormOpen(true)
-  }, [])
+  const [selected, setSelected] = useState<MemberTown | null>(null)
+  const [dialogMode, setDialogMode] = useState<DialogMode>(null)
+  const [deleteTarget, setDeleteTarget] = useState<MemberTown | null>(null)
 
   const columnDefs = useMemo<ColDef<MemberTown>[]>(
     () => [
-      // { field: 'organizationMemberTownID', headerName: 'ID', maxWidth: 100 },
-      { field: 'townID', headerName: 'Town ID', maxWidth: 110 },
-      { field: 'townName', headerName: 'Town Name', flex: 2 },
+      { field: 'townID', headerName: 'Town ID', minWidth: 120, maxWidth: 140 },
       {
-        headerName: 'Actions',
-        maxWidth: 120,
-        pinned: 'right',
-        sortable: false,
-        filter: false,
-        cellRenderer: TownActionsCell,
-        cellRendererParams: { onEdit: handleEdit, onDelete: setDeleteTarget },
+        field: 'townName',
+        headerName: 'Town Name',
+        flex: 2,
+        minWidth: 200,
+        cellClass: 'font-medium',
       },
     ],
-    [handleEdit],
+    [],
   )
 
+  const handleSelectionChanged = useCallback((rows: MemberTown[]) => {
+    setSelected(rows[0] ?? null)
+  }, [])
+
+  const openDialog = useCallback((mode: DialogMode) => {
+    if (selected) setDialogMode(mode)
+  }, [selected])
+
   return (
-    <Card>
+    <Card className="border-border/80 shadow-sm">
       <CardContent className="space-y-4 pt-6">
         <GridToolbar
           search={search}
@@ -78,12 +60,42 @@ export const TownGrid = memo(function TownGrid({ onAdd }: { onAdd: () => void })
           onExport={() => exportGridToCsv(gridApiRef.current, 'member-towns')}
           actions={<Button onClick={onAdd}>Add Town</Button>}
         />
+
+        <GridSelectionBar
+          hasSelection={Boolean(selected)}
+          selectedLabel={selected?.townName ?? null}
+          selectedMeta={selected?.townID ?? null}
+          emptyLabel="Select a row to view, update, or delete a town."
+          onView={() => openDialog('view')}
+          onEdit={() => openDialog('edit')}
+          onDelete={() => selected && setDeleteTarget(selected)}
+        />
+
         {isError ? (
-          <p className="text-sm text-destructive">{getApiErrorMessage(error)}</p>
+          <p className="text-base text-destructive">{getApiErrorMessage(error)}</p>
         ) : null}
-        <AgDataGrid rowData={data} columnDefs={columnDefs} loading={isLoading} quickFilterText={quickFilterText} onGridReady={(api) => { gridApiRef.current = api }} />
+
+        <AgDataGrid
+          rowData={data}
+          columnDefs={columnDefs}
+          loading={isLoading}
+          quickFilterText={quickFilterText}
+          height={580}
+          rowSelection
+          onSelectionChanged={handleSelectionChanged}
+          onGridReady={(api) => {
+            gridApiRef.current = api
+          }}
+        />
       </CardContent>
-      <TownFormDialog open={formOpen} onOpenChange={(o) => { setFormOpen(o); if (!o) setEditing(null) }} town={editing} />
+
+      <TownFormDialog
+        open={dialogMode !== null}
+        onOpenChange={(open) => !open && setDialogMode(null)}
+        town={selected}
+        readOnly={dialogMode === 'view'}
+      />
+
       <ConfirmDialog
         open={Boolean(deleteTarget)}
         onOpenChange={(o) => !o && setDeleteTarget(null)}
@@ -91,11 +103,12 @@ export const TownGrid = memo(function TownGrid({ onAdd }: { onAdd: () => void })
         description={`Delete "${deleteTarget?.townName}"?`}
         confirmLabel="Delete"
         destructive
-        loading={deleteMutation.isPending}  
+        loading={deleteMutation.isPending}
         onConfirm={async () => {
           if (deleteTarget) {
             await deleteMutation.mutateAsync(deleteTarget.organizationMemberTownID)
             setDeleteTarget(null)
+            setSelected(null)
           }
         }}
       />
