@@ -102,8 +102,8 @@ public class OrganizationMemberController(IOrganizationMemberService organizatio
                 OrganizationMemberCenterID = request.OrganizationMemberCenterID,
                 IsTransfer = request.IsTransfer ?? false,
                 TransferOrganizationMemberID = request.TransferOrganizationMemberID,
-                MemberCardIssue = request.IsTransfer == true,
-                FlagStatus = request.IsTransfer == true ? "Active" : "Pending",
+                MemberCardIssue = true,
+                FlagStatus = "Active",
                 OCode = 1,
                 AddByTime = DateTime.UtcNow
             };

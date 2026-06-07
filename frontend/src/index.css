@@ -96,14 +96,37 @@
 
   html {
     @apply font-sans antialiased;
+    font-size: 17px;
   }
 
   body {
     @apply min-h-dvh bg-background text-foreground;
+    font-size: 1rem;
+    font-weight: 450;
+    line-height: 1.55;
   }
 
   #root {
     @apply min-h-dvh;
+  }
+
+  h1 {
+    @apply text-3xl font-semibold tracking-tight;
+  }
+
+  h2 {
+    @apply text-xl font-semibold;
+  }
+
+  label {
+    @apply text-base font-medium;
+  }
+
+  input,
+  select,
+  textarea,
+  button {
+    font-size: inherit;
   }
 }
 
@@ -111,23 +134,34 @@
 .ag-theme-mvp {
   --ag-background-color: var(--card);
   --ag-foreground-color: var(--foreground);
-  --ag-header-background-color: var(--muted);
-  --ag-header-foreground-color: var(--foreground);
+  --ag-header-background-color: #fff7ed;
+  --ag-header-foreground-color: #9a3412;
   --ag-border-color: var(--border);
   --ag-row-hover-color: #fff7ed;
   --ag-selected-row-background-color: #ffedd5;
   --ag-font-family: var(--font-sans);
-  --ag-font-size: 13px;
-  --ag-header-height: 44px;
-  --ag-row-height: 42px;
+  --ag-font-size: 15px;
+  --ag-header-height: 50px;
+  --ag-row-height: 48px;
+  --ag-cell-horizontal-padding: 14px;
 }
 
 .ag-theme-mvp .ag-header-cell {
-  font-weight: 600;
+  font-weight: 650;
+  font-size: 0.95rem;
+  letter-spacing: 0.01em;
+}
+
+.ag-theme-mvp .ag-cell {
+  font-weight: 450;
+}
+
+.ag-theme-mvp .ag-row-selected .ag-cell {
+  font-weight: 500;
 }
 
 .ag-theme-mvp .ag-overlay-loading-center,
 .ag-theme-mvp .ag-overlay-no-rows-center {
-  font-size: 14px;
+  font-size: 1rem;
   color: var(--muted-foreground);
 }

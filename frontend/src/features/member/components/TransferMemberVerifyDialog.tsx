@@ -71,7 +71,7 @@ export const TransferMemberVerifyDialog = memo(function TransferMemberVerifyDial
 
   const loading = memberLoading || docLoading
   const photoSrc = toDocumentDataUrl(document?.memberPhoto)
-  const signatureSrc = toDocumentDataUrl(document?.panCopy, 'image/png')
+  const signatureSrc = toDocumentDataUrl(document?.panCopy)
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>

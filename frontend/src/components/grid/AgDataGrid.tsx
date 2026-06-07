@@ -6,6 +6,7 @@ import {
   type ColDef,
   type GridApi,
   type GridReadyEvent,
+  type SelectionChangedEvent,
 } from 'ag-grid-community'
 import { cn } from '@/lib/utils'
 import {
@@ -25,6 +26,8 @@ interface AgDataGridProps<T extends object> {
   height?: number | string
   onGridReady?: (api: GridApi<T>) => void
   quickFilterText?: string
+  rowSelection?: boolean
+  onSelectionChanged?: (selectedRows: T[]) => void
 }
 
 function AgDataGridInner<T extends object>({
@@ -35,6 +38,8 @@ function AgDataGridInner<T extends object>({
   height = 520,
   onGridReady,
   quickFilterText = '',
+  rowSelection = false,
+  onSelectionChanged,
 }: AgDataGridProps<T>) {
   const gridRef = useRef<AgGridReact<T>>(null)
 
@@ -48,6 +53,13 @@ function AgDataGridInner<T extends object>({
       onGridReady?.(event.api)
     },
     [onGridReady],
+  )
+
+  const handleSelectionChanged = useCallback(
+    (event: SelectionChangedEvent<T>) => {
+      onSelectionChanged?.(event.api.getSelectedRows())
+    },
+    [onSelectionChanged],
   )
 
   useEffect(() => {
@@ -65,7 +77,7 @@ function AgDataGridInner<T extends object>({
   return (
     <div
       className={cn(
-        'ag-theme-alpine ag-theme-mvp w-full rounded-lg border border-border',
+        'ag-theme-alpine ag-theme-mvp w-full rounded-lg border border-border shadow-sm',
         className,
       )}
       style={{ height }}
@@ -83,9 +95,23 @@ function AgDataGridInner<T extends object>({
         animateRows
         suppressCellFocus
         quickFilterText={quickFilterText}
+        rowSelection={rowSelection ? { mode: 'singleRow', checkboxes: false } : undefined}
         overlayLoadingTemplate={`<span class="ag-overlay-loading-center">${GRID_OVERLAY_LOADING}</span>`}
         overlayNoRowsTemplate={`<span class="ag-overlay-no-rows-center">${GRID_OVERLAY_NO_ROWS}</span>`}
         onGridReady={handleGridReady}
+        onSelectionChanged={rowSelection ? handleSelectionChanged : undefined}
+        onRowDoubleClicked={
+          rowSelection
+            ? (event) => {
+                if (event.data) {
+                  event.api.setNodesSelected({
+                    nodes: [event.node],
+                    newValue: true,
+                  })
+                }
+              }
+            : undefined
+        }
       />
     </div>
   )

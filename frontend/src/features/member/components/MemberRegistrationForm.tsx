@@ -34,6 +34,7 @@ interface MemberRegistrationFormProps {
   submitLabel?: string
   showCancel?: boolean
   embedded?: boolean
+  readOnly?: boolean
 }
 
 export const MemberRegistrationForm = memo(function MemberRegistrationForm({
@@ -43,11 +44,14 @@ export const MemberRegistrationForm = memo(function MemberRegistrationForm({
   submitLabel,
   showCancel = true,
   embedded = false,
+  readOnly = false,
 }: MemberRegistrationFormProps) {
   const isEdit = Boolean(member)
   const { data: sections = [] } = useMemberSectionsQuery()
   const createMutation = useCreateMemberMutation()
   const updateMutation = useUpdateMemberMutation()
+  const pending = createMutation.isPending || updateMutation.isPending
+  const fieldsDisabled = readOnly || pending
 
   const [transferEnabled, setTransferEnabled] = useState(false)
   const [transferSource, setTransferSource] = useState<Member | null>(null)
@@ -157,15 +161,24 @@ export const MemberRegistrationForm = memo(function MemberRegistrationForm({
     }
   })
 
-  const pending = createMutation.isPending || updateMutation.isPending
-
-  const formContent = (
+  const formContent = readOnly ? (
+    <div className="space-y-6">
+      <MemberFormFields
+        register={form.register}
+        control={form.control}
+        errors={errors}
+        disabled
+        memberNoReadOnly
+        readOnly
+      />
+    </div>
+  ) : (
     <form onSubmit={onSubmit} className="space-y-6">
       <MemberFormFields
         register={form.register}
         control={form.control}
         errors={errors}
-        disabled={pending}
+        disabled={fieldsDisabled}
         memberNoReadOnly
       />
 
@@ -178,7 +191,7 @@ export const MemberRegistrationForm = memo(function MemberRegistrationForm({
           onLookup={() => setVerifyOpen(true)}
           transferSource={transferSource}
           verified={transferVerified}
-          disabled={pending}
+          disabled={fieldsDisabled}
           error={transferError ?? undefined}
         />
       ) : null}
@@ -189,12 +202,12 @@ export const MemberRegistrationForm = memo(function MemberRegistrationForm({
             type="button"
             variant="outline"
             onClick={onCancel}
-            disabled={pending}
+            disabled={fieldsDisabled}
           >
             Cancel
           </Button>
         ) : null}
-        <Button type="submit" disabled={pending}>
+        <Button type="submit" disabled={fieldsDisabled}>
           {pending ? 'Saving...' : submitLabel ?? (isEdit ? 'Update Member' : 'Register')}
         </Button>
       </div>

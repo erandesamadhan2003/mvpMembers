@@ -1,13 +1,12 @@
 import { memo, useCallback, useMemo, useRef, useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
-import type { ColDef, GridApi, ICellRendererParams } from 'ag-grid-community'
+import { Link } from 'react-router-dom'
+import type { ColDef, GridApi } from 'ag-grid-community'
 import { Eye, Pencil, Trash2 } from 'lucide-react'
 import { AgDataGrid } from '@/components/grid/AgDataGrid'
 import { exportGridToCsv } from '@/components/grid/exportCsv'
 import { useGridQuickFilter } from '@/components/grid/useGridQuickFilter'
 import { GridToolbar } from '@/components/common/GridToolbar'
 import { ConfirmDialog } from '@/components/common/ConfirmDialog'
-import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { ROUTES } from '@/constants/routes.constants'
@@ -17,137 +16,144 @@ import {
   useMembersQuery,
 } from '@/features/member/hooks'
 import type { Member } from '@/features/member/types/member.types'
-import { getMemberStatusLabel, isMemberActive } from '@/features/member/utils/memberStatus'
+import { isMemberActive } from '@/features/member/utils/memberStatus'
 import { getApiErrorMessage } from '@/api'
 
 function memberFullName(m: Member) {
   return [m.firstName, m.middleName, m.lastName].filter(Boolean).join(' ')
 }
 
-function MemberStatusCell(params: ICellRendererParams<Member>) {
-  const row = params.data
-  if (!row) return null
-  const status = getMemberStatusLabel(row)
-  if (status === 'Deceased') return <Badge variant="destructive">Deceased</Badge>
-  if (status === 'Inactive') return <Badge variant="outline">Inactive</Badge>
-  if (status === 'Active') return <Badge variant="success">Active</Badge>
-  return <Badge variant="secondary">Pending</Badge>
-}
-
-function MemberActionsCell(
-  params: ICellRendererParams<Member> & {
-    onView: (row: Member) => void
-    onEdit: (row: Member) => void
-    onDelete: (row: Member) => void
-  },
-) {
-  const row = params.data
-  if (!row) return null
-  return (
-    <div className="flex h-full items-center gap-1">
-      <Button type="button" variant="ghost" size="icon-xs" aria-label="View" onClick={() => params.onView(row)}>
-        <Eye className="size-3.5" />
-      </Button>
-      <Button type="button" variant="ghost" size="icon-xs" aria-label="Edit" onClick={() => params.onEdit(row)}>
-        <Pencil className="size-3.5" />
-      </Button>
-      <Button type="button" variant="ghost" size="icon-xs" aria-label="Delete" onClick={() => params.onDelete(row)}>
-        <Trash2 className="size-3.5 text-destructive" />
-      </Button>
-    </div>
-  )
+interface MemberGridProps {
+  onView: (member: Member) => void
+  onEdit: (member: Member) => void
 }
 
 export const MemberGrid = memo(function MemberGrid({
+  onView,
   onEdit,
-}: {
-  onEdit: (member: Member) => void
-}) {
-  const navigate = useNavigate()
+}: MemberGridProps) {
   const gridApiRef = useRef<GridApi<Member> | null>(null)
   const { search, setSearch, quickFilterText } = useGridQuickFilter()
   const { data = [], isLoading, isError, error } = useMembersQuery()
   const deleteMutation = useDeleteMemberMutation()
   const [deleteTarget, setDeleteTarget] = useState<Member | null>(null)
   const [showAll, setShowAll] = useState(false)
+  const [selected, setSelected] = useState<Member | null>(null)
 
   const rowData = useMemo(
     () => (showAll ? data : data.filter(isMemberActive)),
     [data, showAll],
   )
 
-  const handleView = useCallback(
-    (member: Member) => navigate(ROUTES.memberDetail(member.organizationMemberID)),
-    [navigate],
-  )
-
   const columnDefs = useMemo<ColDef<Member>[]>(
     () => [
-      { field: 'memberNo', headerName: 'Member No', maxWidth: 130 },
       {
-        headerName: 'Name',
-        flex: 1.5,
+        field: 'memberNo',
+        headerName: 'Member No',
+        minWidth: 140,
+        maxWidth: 160,
+        cellClass: 'font-medium text-foreground',
+      },
+      {
+        headerName: 'Full Name',
+        flex: 1.6,
+        minWidth: 180,
         valueGetter: (p) => (p.data ? memberFullName(p.data) : ''),
       },
-      { field: 'phoneNo', headerName: 'Phone', maxWidth: 130 },
-      { field: 'eMail', headerName: 'Email', flex: 1.2 },
+      {
+        field: 'phoneNo',
+        headerName: 'Phone',
+        minWidth: 130,
+        maxWidth: 150,
+      },
+      {
+        field: 'eMail',
+        headerName: 'Email',
+        flex: 1.4,
+        minWidth: 180,
+      },
       {
         headerName: 'Town',
+        minWidth: 130,
         valueGetter: (p) =>
           p.data?.organizationMemberCenter?.organizationMemberTown?.townName ?? '—',
       },
       {
         headerName: 'Center',
+        minWidth: 140,
         valueGetter: (p) => p.data?.organizationMemberCenter?.centerName ?? '—',
       },
       {
         headerName: 'Section',
+        minWidth: 120,
         valueGetter: (p) => p.data?.memberSection?.memberSectionName ?? '—',
       },
       {
         field: 'registrationDate',
-        headerName: 'Registration',
-        maxWidth: 130,
+        headerName: 'Registered',
+        minWidth: 130,
+        maxWidth: 150,
         valueFormatter: (p) => formatDisplayDate(p.value as string),
       },
-      {
-        headerName: 'Status',
-        maxWidth: 110,
-        cellRenderer: MemberStatusCell,
-      },
-      {
-        headerName: 'Actions',
-        maxWidth: 130,
-        pinned: 'right',
-        sortable: false,
-        filter: false,
-        cellRenderer: MemberActionsCell,
-        cellRendererParams: {
-          onView: handleView,
-          onEdit,
-          onDelete: setDeleteTarget,
-        },
-      },
     ],
-    [handleView, onEdit],
+    [],
+  )
+
+  const handleSelectionChanged = useCallback((rows: Member[]) => {
+    setSelected(rows[0] ?? null)
+  }, [])
+
+  const requireSelection = useCallback(
+    (action: (member: Member) => void) => {
+      if (selected) action(selected)
+    },
+    [selected],
   )
 
   return (
-    <Card>
+    <Card className="border-border/80 shadow-sm">
       <CardContent className="space-y-4 pt-6">
         <GridToolbar
           search={search}
           onSearchChange={setSearch}
-          searchPlaceholder="Search members..."
+          searchPlaceholder="Search members by name, number, email..."
           onExport={() => exportGridToCsv(gridApiRef.current, 'members')}
           actions={
             <>
               <Button
                 type="button"
                 variant="outline"
+                disabled={!selected}
+                onClick={() => requireSelection(onView)}
+              >
+                <Eye className="size-4" aria-hidden />
+                View
+              </Button>
+              <Button
+                type="button"
+                variant="outline"
+                disabled={!selected}
+                onClick={() => requireSelection(onEdit)}
+              >
+                <Pencil className="size-4" aria-hidden />
+                Update
+              </Button>
+              <Button
+                type="button"
+                variant="outline"
+                disabled={!selected}
+                className="text-destructive hover:text-destructive"
+                onClick={() => requireSelection(setDeleteTarget)}
+              >
+                <Trash2 className="size-4" aria-hidden />
+                Delete
+              </Button>
+              <Button
+                type="button"
+                variant="secondary"
                 onClick={() => setShowAll((v) => !v)}
               >
-                {showAll ? 'Show Active Only' : 'Show All Members'}
+                {showAll ? 'Active Only' : 'Show All'}
               </Button>
               <Link to={ROUTES.memberCreate}>
                 <Button type="button">Register Member</Button>
@@ -155,18 +161,38 @@ export const MemberGrid = memo(function MemberGrid({
             </>
           }
         />
+
+        {selected ? (
+          <p className="rounded-md border border-primary/20 bg-primary/5 px-4 py-2.5 text-base text-foreground">
+            Selected: <span className="font-semibold">{memberFullName(selected)}</span>
+            {selected.memberNo ? (
+              <span className="text-muted-foreground"> · {selected.memberNo}</span>
+            ) : null}
+          </p>
+        ) : (
+          <p className="text-base text-muted-foreground">
+            Select a row to view, update, or delete a member.
+          </p>
+        )}
+
         {isError ? (
-          <p className="text-sm text-destructive">{getApiErrorMessage(error)}</p>
+          <p className="text-base text-destructive">{getApiErrorMessage(error)}</p>
         ) : null}
+
         <AgDataGrid
           rowData={rowData}
           columnDefs={columnDefs}
           loading={isLoading}
           quickFilterText={quickFilterText}
-          height={560}
-          onGridReady={(api) => { gridApiRef.current = api }}
+          height={580}
+          rowSelection
+          onSelectionChanged={handleSelectionChanged}
+          onGridReady={(api) => {
+            gridApiRef.current = api
+          }}
         />
       </CardContent>
+
       <ConfirmDialog
         open={Boolean(deleteTarget)}
         onOpenChange={(o) => !o && setDeleteTarget(null)}
@@ -179,6 +205,7 @@ export const MemberGrid = memo(function MemberGrid({
           if (deleteTarget) {
             await deleteMutation.mutateAsync(deleteTarget.organizationMemberID)
             setDeleteTarget(null)
+            setSelected(null)
           }
         }}
       />

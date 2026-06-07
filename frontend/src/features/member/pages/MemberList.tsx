@@ -1,25 +1,48 @@
 import { memo, useCallback, useState } from 'react'
 import { PageContainer, PageHeader } from '@/components/common'
 import { MemberGrid } from '@/features/member/components/MemberGrid'
-import { MemberFormDialog } from '@/features/member/components/MemberFormDialog'
+import {
+  MemberRecordDialog,
+  type MemberDialogMode,
+} from '@/features/member/components/MemberRecordDialog'
 import type { Member } from '@/features/member/types/member.types'
 
 export const MemberList = memo(function MemberList() {
-  const [editing, setEditing] = useState<Member | null>(null)
+  const [dialogMember, setDialogMember] = useState<Member | null>(null)
+  const [dialogMode, setDialogMode] = useState<MemberDialogMode>('view')
+  const [dialogOpen, setDialogOpen] = useState(false)
 
-  const handleEdit = useCallback((member: Member) => setEditing(member), [])
+  const openDialog = useCallback((member: Member, mode: MemberDialogMode) => {
+    setDialogMember(member)
+    setDialogMode(mode)
+    setDialogOpen(true)
+  }, [])
+
+  const handleView = useCallback(
+    (member: Member) => openDialog(member, 'view'),
+    [openDialog],
+  )
+
+  const handleEdit = useCallback(
+    (member: Member) => openDialog(member, 'edit'),
+    [openDialog],
+  )
 
   return (
     <PageContainer>
       <PageHeader
         title="Members"
-        description="Search, manage, and maintain organization member records."
+        description="Select a member from the list, then use View, Update, or Delete."
       />
-      <MemberGrid onEdit={handleEdit} />
-      <MemberFormDialog
-        open={Boolean(editing)}
-        onOpenChange={(open) => !open && setEditing(null)}
-        member={editing}
+      <MemberGrid onView={handleView} onEdit={handleEdit} />
+      <MemberRecordDialog
+        open={dialogOpen}
+        onOpenChange={(open) => {
+          setDialogOpen(open)
+          if (!open) setDialogMember(null)
+        }}
+        member={dialogMember}
+        mode={dialogMode}
       />
     </PageContainer>
   )
