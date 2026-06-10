@@ -116,7 +116,6 @@ public class OrganizationMemberController(IOrganizationMemberService organizatio
                 PrvShareHolder = request.PrvShareHolder,
                 Objection = request.Objection,
                 MemberSectionID = request.MemberSectionID,
-                OrganizationMemberCenterID = request.OrganizationMemberCenterID,
                 OrganizationMemberSubTownID = request.OrganizationMemberSubTownID,
                 IsTransfer = request.IsTransfer ?? false,
                 TransferOrganizationMemberID = request.TransferOrganizationMemberID,
@@ -190,7 +189,6 @@ public class OrganizationMemberController(IOrganizationMemberService organizatio
                 DeathDate = request.DeathDate,
                 DeathRef = request.DeathRef,
                 MemberSectionID = request.MemberSectionID,
-                OrganizationMemberCenterID = request.OrganizationMemberCenterID,
                 OrganizationMemberSubTownID = request.OrganizationMemberSubTownID,
             };
 
