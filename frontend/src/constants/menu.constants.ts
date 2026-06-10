@@ -47,6 +47,11 @@ export const SIDEBAR_MENU: MenuItem[] = [
         label: 'Member Centers',
         href: ROUTES.memberCenters,
       },
+      {
+        id: 'member-sub-towns',
+        label: 'Member Sub Towns',
+        href: ROUTES.memberSubTowns,
+      }
     ],
   },
   {
@@ -79,4 +84,5 @@ export const SIDEBAR_MENU: MenuItem[] = [
     href: ROUTES.settings,
     icon: Settings,
   },
+
 ]

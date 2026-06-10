@@ -19,13 +19,15 @@ public static class ServiceExtension
         services.AddScoped<IOrganizationMemberCenterRepository, OrganizationMemberCenterRepository>();
         services.AddScoped<IOrganizationMemberRepository, OrganizationMemberRepository>();
         services.AddScoped<IOrganizationMemberDocumentRepository, OrganizationMemberDocumentRepository>();
-
+        services.AddScoped<IOrganisationMemberSubTownRepository, OrganisationMemberSubTownRepository>();
+        
         // Services
         services.AddScoped<IOrganizationMemberSectionService, OrganizationMemberSectionService>();
         services.AddScoped<IOrganizationMemberTownService, OrganizationMemberTownService>();
         services.AddScoped<IOrganizationMemberCenterService, OrganizationMemberCenterService>();
         services.AddScoped<IOrganizationMemberService, OrganizationMemberService>();
         services.AddScoped<IOrganizationMemberDocumentService, OrganizationMemberDocumentService>();
+        services.AddScoped<IOrganisationMemberSubTownService, OrganisationMemberSubTownService>();
         return services;
     }
 }

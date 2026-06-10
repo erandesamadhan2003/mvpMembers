@@ -84,6 +84,7 @@ function AgDataGridInner<T extends object>({
       <AgGridReact<T>
         ref={gridRef}
         columnDefs={columnDefs}
+        theme="legacy"
         rowData={rowData}
         defaultColDef={defaultColDef}
         domLayout="autoHeight"

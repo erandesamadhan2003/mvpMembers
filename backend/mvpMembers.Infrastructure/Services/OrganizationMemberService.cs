@@ -4,14 +4,27 @@ using mvpMembers.Domain.Entities;
 
 namespace mvpMembers.Infrastructure.Services;
 
-public class OrganizationMemberService(IOrganizationMemberRepository organizationMemberRepository) : IOrganizationMemberService
+public class OrganizationMemberService(
+    IOrganizationMemberRepository organizationMemberRepository,
+    IOrganisationMemberSubTownRepository subTownRepository) : IOrganizationMemberService
 {
     private readonly IOrganizationMemberRepository _organizationMemberRepository = organizationMemberRepository;
+    private readonly IOrganisationMemberSubTownRepository _subTownRepository = subTownRepository;
 
     public async Task<long> CreateAsync(OrganizationMember organizationMember)
     {
         if (string.IsNullOrWhiteSpace(organizationMember.FirstName))
             throw new ArgumentException("FirstName is required");
+
+        // Auto-derive CenterID from SubTown
+        if (organizationMember.OrganizationMemberSubTownID is > 0)
+        {
+            var subTown = await _subTownRepository.GetByIdAsync(
+                organizationMember.OrganizationMemberSubTownID.Value)
+                ?? throw new Exception("Sub town not found");
+
+            organizationMember.OrganizationMemberCenterID = subTown.OrganizationMemberCenterID;
+        }
 
         organizationMember.RegistrationDate ??= DateTime.UtcNow;
         organizationMember.FlagStatus = "Active";
@@ -36,42 +49,43 @@ public class OrganizationMemberService(IOrganizationMemberRepository organizatio
         var existingMember = await _organizationMemberRepository.GetByIdAsync(id)
             ?? throw new Exception("Organization member not found");
 
+        // Auto-derive CenterID from SubTown
+        if (organizationMember.OrganizationMemberSubTownID is > 0)
+        {
+            var subTown = await _subTownRepository.GetByIdAsync(
+                organizationMember.OrganizationMemberSubTownID.Value)
+                ?? throw new Exception("Sub town not found");
+
+            organizationMember.OrganizationMemberCenterID = subTown.OrganizationMemberCenterID;
+        }
+
         existingMember.NameTitleID = organizationMember.NameTitleID;
         existingMember.FirstName = organizationMember.FirstName;
         existingMember.LastName = organizationMember.LastName;
         existingMember.MiddleName = organizationMember.MiddleName;
         existingMember.NameInNativeLanguage = organizationMember.NameInNativeLanguage;
-
-        // Permanent Address
         existingMember.Town = organizationMember.Town;
         existingMember.City = organizationMember.City;
         existingMember.Taluka = organizationMember.Taluka;
         existingMember.District = organizationMember.District;
         existingMember.States = organizationMember.States;
         existingMember.PinCode = organizationMember.PinCode;
-
-        // Present Address
         existingMember.PTown = organizationMember.PTown;
         existingMember.PCity = organizationMember.PCity;
         existingMember.PTaluka = organizationMember.PTaluka;
         existingMember.PDistrict = organizationMember.PDistrict;
         existingMember.PPinCode = organizationMember.PPinCode;
-
-        // Marathi Permanent Address
         existingMember.MTown = organizationMember.MTown;
         existingMember.MCity = organizationMember.MCity;
         existingMember.MTaluka = organizationMember.MTaluka;
         existingMember.MDistrict = organizationMember.MDistrict;
         existingMember.MStates = organizationMember.MStates;
         existingMember.MPinCode = organizationMember.MPinCode;
-
-        // Marathi Present Address
         existingMember.MPTown = organizationMember.MPTown;
         existingMember.MPCity = organizationMember.MPCity;
         existingMember.MPTaluka = organizationMember.MPTaluka;
         existingMember.MPDistrict = organizationMember.MPDistrict;
         existingMember.MPPinCode = organizationMember.MPPinCode;
-
         existingMember.Gender = organizationMember.Gender;
         existingMember.DOB = organizationMember.DOB;
         existingMember.Qualification = organizationMember.Qualification;
@@ -97,6 +111,7 @@ public class OrganizationMemberService(IOrganizationMemberRepository organizatio
         await _organizationMemberRepository.UpdateAsync(existingMember);
     }
 
+    // remaining methods unchanged
     public async Task DeleteAsync(long id)
     {
         var organizationMember = await _organizationMemberRepository.GetByIdAsync(id)
@@ -105,27 +120,17 @@ public class OrganizationMemberService(IOrganizationMemberRepository organizatio
     }
 
     public async Task<OrganizationMember?> GetByIdAsync(long id)
-    {
-        return await _organizationMemberRepository.GetByIdAsync(id);
-    }
+        => await _organizationMemberRepository.GetByIdAsync(id);
 
     public async Task<List<OrganizationMember>> GetAllAsync()
-    {
-        return await _organizationMemberRepository.GetAllAsync();
-    }
+        => await _organizationMemberRepository.GetAllAsync();
 
     public async Task<List<OrganizationMember>> GetByMemberSectionIdAsync(long memberSectionId)
-    {
-        return await _organizationMemberRepository.GetByMemberSectionIdAsync(memberSectionId);
-    }
+        => await _organizationMemberRepository.GetByMemberSectionIdAsync(memberSectionId);
 
     public async Task<List<OrganizationMember>> GetByOrganizationMemberCenterIdAsync(long centerID)
-    {
-        return await _organizationMemberRepository.GetByOrganizationMemberCenterIdAsync(centerID);
-    }
+        => await _organizationMemberRepository.GetByOrganizationMemberCenterIdAsync(centerID);
 
     public async Task<OrganizationMember?> GetByMemberNoAsync(string memberNo)
-    {
-        return await _organizationMemberRepository.GetByMemberNoAsync(memberNo);
-    }
+        => await _organizationMemberRepository.GetByMemberNoAsync(memberNo);
 }

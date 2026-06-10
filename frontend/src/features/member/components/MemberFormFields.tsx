@@ -5,8 +5,9 @@ import { Label } from '@/components/ui/label'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { NAME_TITLES } from '@/features/member/constants/nameTitles.constants'
 import type { MemberFormValues } from '@/features/member/components/memberForm.schema'
-import { useMemberCentersQuery } from '@/features/memberCenter/hooks'
 import { useMemberSectionsQuery } from '@/features/memberSection/hooks'
+import { useMemberSubTownsQuery } from '@/features/memberSubTown/hooks'
+import { MarathiInput } from '@/components/common/MarathiInput'
 
 interface MemberFormFieldsProps {
   register: UseFormRegister<MemberFormValues>
@@ -57,19 +58,22 @@ export const MemberFormFields = memo(function MemberFormFields({
     : 'h-10 text-base md:text-base'
 
   const { data: sections = [] } = useMemberSectionsQuery()
-  const { data: centers = [] } = useMemberCentersQuery()
+  const { data: subTowns = [] } = useMemberSubTownsQuery()
 
   const sectionOptions = useMemo(
     () => sections.map((s) => ({ value: String(s.memberSectionID), label: s.memberSectionName })),
     [sections],
   )
 
-  const centerOptions = useMemo(
-    () => centers.map((c) => ({
-      value: String(c.organizationMemberCenterID),
-      label: `${c.centerName} (${c.organizationMemberTown?.townName ?? '—'})`,
-    })),
-    [centers],
+  const subTownOptions = useMemo(
+    () =>
+      subTowns.map((st) => ({
+        value: String(st.organisationMemberSubTownID),
+        label: `${st.subTownName} (${st.organizationMemberCenter?.centerName ?? '—'})`,
+        centerName: st.organizationMemberCenter?.centerName ?? '—',
+        townName: st.organizationMemberCenter?.organizationMemberTown?.townName ?? '—',
+      })),
+    [subTowns],
   )
 
   return (
@@ -77,6 +81,7 @@ export const MemberFormFields = memo(function MemberFormFields({
       <TabsList className="w-full justify-start bg-orange-300">
         <TabsTrigger value="personal">Personal</TabsTrigger>
         <TabsTrigger value="address">Address</TabsTrigger>
+        <TabsTrigger value="marathi-address">Marathi Address</TabsTrigger>
         <TabsTrigger value="membership">Membership</TabsTrigger>
         {isEdit ? <TabsTrigger value="status">Status</TabsTrigger> : null}
       </TabsList>
@@ -113,9 +118,24 @@ export const MemberFormFields = memo(function MemberFormFields({
           <Field id="last-name" label="Last Name" error={errors.lastName?.message}>
             <Input id="last-name" className={inputClass} disabled={disabled} readOnly={readOnly} {...register('lastName')} />
           </Field>
-          <Field id="native-name" label="Name in Native Language" error={errors.nameInNativeLanguage?.message}>
-            <Input id="native-name" className={inputClass} disabled={disabled} readOnly={readOnly} {...register('nameInNativeLanguage')} />
+
+          {/* Native name with Marathi transliteration */}
+          <Field id="native-name" label="Name in Native Language (मराठी)" error={errors.nameInNativeLanguage?.message}>
+            <Controller
+              control={control}
+              name="nameInNativeLanguage"
+              render={({ field }) => (
+                <MarathiInput
+                  id="native-name"
+                  value={field.value ?? ''}
+                  onChange={field.onChange}
+                  disabled={disabled}
+                  readOnly={readOnly}
+                />
+              )}
+            />
           </Field>
+
           <Field id="phone-no" label="Phone" error={errors.phoneNo?.message}>
             <Input id="phone-no" className={inputClass} disabled={disabled} readOnly={readOnly} {...register('phoneNo')} />
           </Field>
@@ -166,7 +186,7 @@ export const MemberFormFields = memo(function MemberFormFields({
         </div>
       </TabsContent>
 
-      {/* ── Address ── */}
+      {/* ── Address (English) ── */}
       <TabsContent value="address" className="mt-4 space-y-6">
         <div>
           <h4 className="mb-3 text-base font-semibold text-foreground">Permanent Address</h4>
@@ -191,7 +211,6 @@ export const MemberFormFields = memo(function MemberFormFields({
             </Field>
           </div>
         </div>
-
         <div>
           <h4 className="mb-3 text-base font-semibold text-foreground">Present Address</h4>
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -212,47 +231,87 @@ export const MemberFormFields = memo(function MemberFormFields({
             </Field>
           </div>
         </div>
+      </TabsContent>
+
+      {/* ── Marathi Address ── */}
+      <TabsContent value="marathi-address" className="mt-4 space-y-6">
 
         <div>
-          <h4 className="mb-3 text-base font-semibold text-foreground">Marathi Permanent Address</h4>
+          <h4 className="mb-3 text-base font-semibold text-foreground">कायमचा पत्ता (Permanent Address)</h4>
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            <Field id="m-town" label="Town" error={errors.mTown?.message}>
-              <Input id="m-town" className={inputClass} disabled={disabled} readOnly={readOnly} {...register('mTown')} />
+            <Field id="m-town" label="गाव (Town)" error={errors.mTown?.message}>
+              <Controller control={control} name="mTown"
+                render={({ field }) => (
+                  <MarathiInput id="m-town" value={field.value ?? ''} onChange={field.onChange} disabled={disabled} readOnly={readOnly} />
+                )}
+              />
             </Field>
-            <Field id="m-city" label="City" error={errors.mCity?.message}>
-              <Input id="m-city" className={inputClass} disabled={disabled} readOnly={readOnly} {...register('mCity')} />
+            <Field id="m-city" label="शहर (City)" error={errors.mCity?.message}>
+              <Controller control={control} name="mCity"
+                render={({ field }) => (
+                  <MarathiInput id="m-city" value={field.value ?? ''} onChange={field.onChange} disabled={disabled} readOnly={readOnly} />
+                )}
+              />
             </Field>
-            <Field id="m-taluka" label="Taluka" error={errors.mTaluka?.message}>
-              <Input id="m-taluka" className={inputClass} disabled={disabled} readOnly={readOnly} {...register('mTaluka')} />
+            <Field id="m-taluka" label="तालुका (Taluka)" error={errors.mTaluka?.message}>
+              <Controller control={control} name="mTaluka"
+                render={({ field }) => (
+                  <MarathiInput id="m-taluka" value={field.value ?? ''} onChange={field.onChange} disabled={disabled} readOnly={readOnly} />
+                )}
+              />
             </Field>
-            <Field id="m-district" label="District" error={errors.mDistrict?.message}>
-              <Input id="m-district" className={inputClass} disabled={disabled} readOnly={readOnly} {...register('mDistrict')} />
+            <Field id="m-district" label="जिल्हा (District)" error={errors.mDistrict?.message}>
+              <Controller control={control} name="mDistrict"
+                render={({ field }) => (
+                  <MarathiInput id="m-district" value={field.value ?? ''} onChange={field.onChange} disabled={disabled} readOnly={readOnly} />
+                )}
+              />
             </Field>
-            <Field id="m-states" label="State" error={errors.mStates?.message}>
-              <Input id="m-states" className={inputClass} disabled={disabled} readOnly={readOnly} {...register('mStates')} />
+            <Field id="m-states" label="राज्य (State)" error={errors.mStates?.message}>
+              <Controller control={control} name="mStates"
+                render={({ field }) => (
+                  <MarathiInput id="m-states" value={field.value ?? ''} onChange={field.onChange} disabled={disabled} readOnly={readOnly} />
+                )}
+              />
             </Field>
-            <Field id="m-pin-code" label="PIN Code" error={errors.mPinCode?.message}>
+            <Field id="m-pin-code" label="पिन कोड (PIN Code)" error={errors.mPinCode?.message}>
               <Input id="m-pin-code" className={inputClass} disabled={disabled} readOnly={readOnly} {...register('mPinCode')} />
             </Field>
           </div>
         </div>
 
         <div>
-          <h4 className="mb-3 text-base font-semibold text-foreground">Marathi Present Address</h4>
+          <h4 className="mb-3 text-base font-semibold text-foreground">सध्याचा पत्ता (Present Address)</h4>
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            <Field id="mp-town" label="Town" error={errors.mPTown?.message}>
-              <Input id="mp-town" className={inputClass} disabled={disabled} readOnly={readOnly} {...register('mPTown')} />
+            <Field id="mp-town" label="गाव (Town)" error={errors.mPTown?.message}>
+              <Controller control={control} name="mPTown"
+                render={({ field }) => (
+                  <MarathiInput id="mp-town" value={field.value ?? ''} onChange={field.onChange} disabled={disabled} readOnly={readOnly} />
+                )}
+              />
             </Field>
-            <Field id="mp-city" label="City" error={errors.mPCity?.message}>
-              <Input id="mp-city" className={inputClass} disabled={disabled} readOnly={readOnly} {...register('mPCity')} />
+            <Field id="mp-city" label="शहर (City)" error={errors.mPCity?.message}>
+              <Controller control={control} name="mPCity"
+                render={({ field }) => (
+                  <MarathiInput id="mp-city" value={field.value ?? ''} onChange={field.onChange} disabled={disabled} readOnly={readOnly} />
+                )}
+              />
             </Field>
-            <Field id="mp-taluka" label="Taluka" error={errors.mPTaluka?.message}>
-              <Input id="mp-taluka" className={inputClass} disabled={disabled} readOnly={readOnly} {...register('mPTaluka')} />
+            <Field id="mp-taluka" label="तालुका (Taluka)" error={errors.mPTaluka?.message}>
+              <Controller control={control} name="mPTaluka"
+                render={({ field }) => (
+                  <MarathiInput id="mp-taluka" value={field.value ?? ''} onChange={field.onChange} disabled={disabled} readOnly={readOnly} />
+                )}
+              />
             </Field>
-            <Field id="mp-district" label="District" error={errors.mPDistrict?.message}>
-              <Input id="mp-district" className={inputClass} disabled={disabled} readOnly={readOnly} {...register('mPDistrict')} />
+            <Field id="mp-district" label="जिल्हा (District)" error={errors.mPDistrict?.message}>
+              <Controller control={control} name="mPDistrict"
+                render={({ field }) => (
+                  <MarathiInput id="mp-district" value={field.value ?? ''} onChange={field.onChange} disabled={disabled} readOnly={readOnly} />
+                )}
+              />
             </Field>
-            <Field id="mp-pin-code" label="PIN Code" error={errors.mPPinCode?.message}>
+            <Field id="mp-pin-code" label="पिन कोड (PIN Code)" error={errors.mPPinCode?.message}>
               <Input id="mp-pin-code" className={inputClass} disabled={disabled} readOnly={readOnly} {...register('mPPinCode')} />
             </Field>
           </div>
@@ -260,10 +319,8 @@ export const MemberFormFields = memo(function MemberFormFields({
       </TabsContent>
 
       {/* ── Membership ── */}
-      {/* ── Membership ── */}
       <TabsContent value="membership" className="mt-4 space-y-4">
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-
           <Field id="member-section" label="Section *" error={errors.memberSectionID?.message}>
             <Controller
               control={control}
@@ -285,20 +342,20 @@ export const MemberFormFields = memo(function MemberFormFields({
             />
           </Field>
 
-          <Field id="member-center" label="Center" error={errors.organizationMemberCenterID?.message}>
+          <Field id="member-sub-town" label="Sub Town" error={errors.organizationMemberSubTownID?.message}>
             <Controller
               control={control}
-              name="organizationMemberCenterID"
+              name="organizationMemberSubTownID"
               render={({ field }) => (
                 <select
-                  id="member-center"
+                  id="member-sub-town"
                   className={fieldClass}
                   disabled={disabled || readOnly}
                   value={field.value != null ? String(field.value) : ''}
                   onChange={(e) => field.onChange(e.target.value ? Number(e.target.value) : null)}
                 >
-                  <option value="">Select center</option>
-                  {centerOptions.map((o) => (
+                  <option value="">Select sub town</option>
+                  {subTownOptions.map((o) => (
                     <option key={o.value} value={o.value}>{o.label}</option>
                   ))}
                 </select>
@@ -306,7 +363,42 @@ export const MemberFormFields = memo(function MemberFormFields({
             />
           </Field>
 
-          {/* rest unchanged */}
+          <Field id="member-center" label="Center (auto)">
+            <Controller
+              control={control}
+              name="organizationMemberSubTownID"
+              render={({ field }) => {
+                const selected = subTownOptions.find((o) => o.value === String(field.value ?? ''))
+                return (
+                  <input
+                    id="member-center"
+                    readOnly
+                    className="flex h-10 w-full rounded-md border border-border bg-muted/40 px-3 py-2 text-base text-foreground cursor-default"
+                    value={selected?.centerName ?? '—'}
+                  />
+                )
+              }}
+            />
+          </Field>
+
+          <Field id="member-town" label="Town (auto)">
+            <Controller
+              control={control}
+              name="organizationMemberSubTownID"
+              render={({ field }) => {
+                const selected = subTownOptions.find((o) => o.value === String(field.value ?? ''))
+                return (
+                  <input
+                    id="member-town"
+                    readOnly
+                    className="flex h-10 w-full rounded-md border border-border bg-muted/40 px-3 py-2 text-base text-foreground cursor-default"
+                    value={selected?.townName ?? '—'}
+                  />
+                )
+              }}
+            />
+          </Field>
+
           <Field id="member-no" label="Member No." error={errors.memberNo?.message}>
             <Input
               id="member-no"

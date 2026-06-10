@@ -48,6 +48,11 @@ const PlaceholderPage = lazy(() =>
     default: m.PlaceholderPage,
   })),
 )
+const SubTownList = lazy(() =>
+  import('@/features/memberSubTown/pages/SubTownList').then((m) => ({
+    default: m.SubTownList,
+  })),
+)
 
 function LazyPage({ children }: { children: React.ReactNode }) {
   return (
@@ -177,6 +182,14 @@ export const router = createBrowserRouter([
             element: (
               <LazyPage>
                 <PlaceholderPage title="Settings" />
+              </LazyPage>
+            ),
+          },
+          {
+            path: ROUTES.memberSubTowns,
+            element: (
+              <LazyPage>
+                <SubTownList />
               </LazyPage>
             ),
           },

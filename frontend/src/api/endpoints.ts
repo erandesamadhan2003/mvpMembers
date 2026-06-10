@@ -37,4 +37,10 @@ export const ENDPOINTS = {
     byMemberId: (memberId: number) =>
       `/api/organization-member-documents/by-member/${memberId}`,
   },
+  memberSubTowns: {
+    base: '/api/organisation-member-sub-towns',
+    byId: (id: number) => `/api/organisation-member-sub-towns/${id}`,
+    byCenterId: (centerId: number) => `/api/organisation-member-sub-towns/by-center/${centerId}`,
+    bySubTownId: (subTownId: string) => `/api/organisation-member-sub-towns/by-sub-town-id/${subTownId}`,
+  },
 } as const

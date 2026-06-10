@@ -61,7 +61,6 @@ export interface Member extends AuditFields {
   prvShareHolder?: string | null
   objection?: string | null
   memberSectionID?: number | null
-  organizationMemberCenterID?: number | null
   organizationMemberSubTownID?: number | null
   oCode?: number | null
   transferOrganizationMemberID?: number | null

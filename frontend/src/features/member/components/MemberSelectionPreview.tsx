@@ -74,12 +74,12 @@ export const MemberSelectionPreview = memo(function MemberSelectionPreview({
 
   return (
     <Card className="h-full border-border/80 shadow-sm">
-      <CardHeader className="border-b border-border/60 bg-muted/20 pb-4">
+      <CardHeader className="border-b border-border/60 bg-muted/20">
         <CardTitle className="text-lg font-semibold">Member Preview</CardTitle>
       </CardHeader>
-      <CardContent className="space-y-4 pt-4">
+      <CardContent className="space-y-4 pt-2">
         {!member ? (
-          <div className="flex min-h-105 flex-col items-center justify-center rounded-lg border border-dashed border-border bg-muted/20 p-6 text-center">
+          <div className="flex min-h-105 flex-col items-center justify-center rounded-lg border border-dashed border-border bg-muted/20 p-3 text-center">
             <UserRound className="mb-3 size-12 text-muted-foreground/70" aria-hidden />
             <p className="text-base font-medium text-foreground">No member selected</p>
           </div>
@@ -88,7 +88,7 @@ export const MemberSelectionPreview = memo(function MemberSelectionPreview({
             {isLoading ? (
               <LoadingSpinner className="" label="Loading documents..." />
             ) : (
-              <div className="space-y-4">
+              <div className="space-y-2">
                 <PreviewFrame
                   label="Photo"
                   src={photoSrc}

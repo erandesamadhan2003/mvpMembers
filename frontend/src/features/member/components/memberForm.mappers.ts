@@ -16,7 +16,6 @@ export function memberToFormValues(member: Member): MemberFormValues {
     mobileNo: member.mobileNo ?? '',
     eMail: member.eMail ?? '',
     memberSectionID: member.memberSectionID ?? undefined,
-    organizationMemberCenterID: member.organizationMemberCenterID ?? undefined,
     organizationMemberSubTownID: member.organizationMemberSubTownID ?? undefined,
 
     town: member.town ?? '',
@@ -74,7 +73,6 @@ export const emptyMemberFormValues: MemberFormValues = {
   mobileNo: '',
   eMail: '',
   memberSectionID: null,
-  organizationMemberCenterID: undefined,
   organizationMemberSubTownID: undefined,
 
   town: '',
@@ -157,7 +155,6 @@ function formValuesToPayload(values: MemberFormValues): Omit<CreateMemberRequest
     mobileNo: values.mobileNo || null,
     eMail: values.eMail || null,
     memberSectionID: values.memberSectionID ?? null,
-    organizationMemberCenterID: values.organizationMemberCenterID ?? null,
     organizationMemberSubTownID: values.organizationMemberSubTownID ?? null,
     town: values.town || null,
     city: values.city || null,

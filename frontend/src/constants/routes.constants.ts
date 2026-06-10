@@ -22,4 +22,5 @@ export const ROUTES = {
   roles: '/admin/roles',
   permissions: '/admin/permissions',
   settings: '/settings',
+  memberSubTowns: '/master-data/sub-towns'
 } as const

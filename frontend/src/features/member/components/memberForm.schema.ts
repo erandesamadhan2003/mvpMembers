@@ -15,7 +15,6 @@ export const memberFormSchema = z.object({
     { message: 'Invalid email address' },
   ),
   memberSectionID: z.coerce.number().int().positive().optional().nullable(),
-  organizationMemberCenterID: z.coerce.number().int().positive().optional().nullable(),
   organizationMemberSubTownID: z.coerce.number().int().positive().optional().nullable(),
 
   // Permanent Address

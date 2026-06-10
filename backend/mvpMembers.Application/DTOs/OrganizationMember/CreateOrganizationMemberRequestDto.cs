@@ -55,7 +55,6 @@ public class CreateOrganizationMemberRequestDto
     public string? PrvShareHolder { get; set; }
     public string? Objection { get; set; }
     public long? MemberSectionID { get; set; }
-    public long? OrganizationMemberCenterID { get; set; }
     public long? OrganizationMemberSubTownID { get; set; }
     public bool? IsTransfer { get; set; }
     public long? TransferOrganizationMemberID { get; set; }

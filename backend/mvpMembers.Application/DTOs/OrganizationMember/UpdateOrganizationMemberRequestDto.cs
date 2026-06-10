@@ -56,6 +56,5 @@ public class UpdateOrganizationMemberRequestDto
     public DateTime? DeathDate { get; set; }
     public string? DeathRef { get; set; }
     public long? MemberSectionID { get; set; }
-    public long? OrganizationMemberCenterID { get; set; }
     public long? OrganizationMemberSubTownID { get; set; }
 }
