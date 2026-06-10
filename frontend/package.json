@@ -20,6 +20,7 @@
     "axios": "^1.16.1",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
+    "google-input-tool": "^1.4.3",
     "lucide-react": "^1.17.0",
     "postcss": "^8.5.15",
     "react": "^19.2.6",

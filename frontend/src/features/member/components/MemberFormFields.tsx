@@ -1,5 +1,5 @@
 import { memo, useMemo } from 'react'
-import { Controller, type Control, type FieldErrors, type UseFormRegister } from 'react-hook-form'
+import { Controller, useWatch, type Control, type FieldErrors, type UseFormRegister } from 'react-hook-form'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
@@ -75,6 +75,15 @@ export const MemberFormFields = memo(function MemberFormFields({
       })),
     [subTowns],
   )
+
+  // Watch English address fields to auto-feed Marathi inputs
+  const [
+    town, city, taluka, district, states,
+    pTown, pCity, pTaluka, pDistrict,
+  ] = useWatch({
+    control,
+    name: ['town', 'city', 'taluka', 'district', 'states', 'pTown', 'pCity', 'pTaluka', 'pDistrict'],
+  })
 
   return (
     <Tabs defaultValue="personal" className="w-full">
@@ -235,6 +244,9 @@ export const MemberFormFields = memo(function MemberFormFields({
 
       {/* ── Marathi Address ── */}
       <TabsContent value="marathi-address" className="mt-4 space-y-6">
+        <p className="text-sm text-muted-foreground">
+          Marathi fields are auto-filled from the English address. You can edit them manually.
+        </p>
 
         <div>
           <h4 className="mb-3 text-base font-semibold text-foreground">कायमचा पत्ता (Permanent Address)</h4>
@@ -242,35 +254,70 @@ export const MemberFormFields = memo(function MemberFormFields({
             <Field id="m-town" label="गाव (Town)" error={errors.mTown?.message}>
               <Controller control={control} name="mTown"
                 render={({ field }) => (
-                  <MarathiInput id="m-town" value={field.value ?? ''} onChange={field.onChange} disabled={disabled} readOnly={readOnly} />
+                  <MarathiInput
+                    id="m-town"
+                    value={field.value ?? ''}
+                    onChange={field.onChange}
+                    disabled={disabled}
+                    readOnly={readOnly}
+                    autoTransliterateFrom={town ?? ''}
+                  />
                 )}
               />
             </Field>
             <Field id="m-city" label="शहर (City)" error={errors.mCity?.message}>
               <Controller control={control} name="mCity"
                 render={({ field }) => (
-                  <MarathiInput id="m-city" value={field.value ?? ''} onChange={field.onChange} disabled={disabled} readOnly={readOnly} />
+                  <MarathiInput
+                    id="m-city"
+                    value={field.value ?? ''}
+                    onChange={field.onChange}
+                    disabled={disabled}
+                    readOnly={readOnly}
+                    autoTransliterateFrom={city ?? ''}
+                  />
                 )}
               />
             </Field>
             <Field id="m-taluka" label="तालुका (Taluka)" error={errors.mTaluka?.message}>
               <Controller control={control} name="mTaluka"
                 render={({ field }) => (
-                  <MarathiInput id="m-taluka" value={field.value ?? ''} onChange={field.onChange} disabled={disabled} readOnly={readOnly} />
+                  <MarathiInput
+                    id="m-taluka"
+                    value={field.value ?? ''}
+                    onChange={field.onChange}
+                    disabled={disabled}
+                    readOnly={readOnly}
+                    autoTransliterateFrom={taluka ?? ''}
+                  />
                 )}
               />
             </Field>
             <Field id="m-district" label="जिल्हा (District)" error={errors.mDistrict?.message}>
               <Controller control={control} name="mDistrict"
                 render={({ field }) => (
-                  <MarathiInput id="m-district" value={field.value ?? ''} onChange={field.onChange} disabled={disabled} readOnly={readOnly} />
+                  <MarathiInput
+                    id="m-district"
+                    value={field.value ?? ''}
+                    onChange={field.onChange}
+                    disabled={disabled}
+                    readOnly={readOnly}
+                    autoTransliterateFrom={district ?? ''}
+                  />
                 )}
               />
             </Field>
             <Field id="m-states" label="राज्य (State)" error={errors.mStates?.message}>
               <Controller control={control} name="mStates"
                 render={({ field }) => (
-                  <MarathiInput id="m-states" value={field.value ?? ''} onChange={field.onChange} disabled={disabled} readOnly={readOnly} />
+                  <MarathiInput
+                    id="m-states"
+                    value={field.value ?? ''}
+                    onChange={field.onChange}
+                    disabled={disabled}
+                    readOnly={readOnly}
+                    autoTransliterateFrom={states ?? ''}
+                  />
                 )}
               />
             </Field>
@@ -286,28 +333,56 @@ export const MemberFormFields = memo(function MemberFormFields({
             <Field id="mp-town" label="गाव (Town)" error={errors.mPTown?.message}>
               <Controller control={control} name="mPTown"
                 render={({ field }) => (
-                  <MarathiInput id="mp-town" value={field.value ?? ''} onChange={field.onChange} disabled={disabled} readOnly={readOnly} />
+                  <MarathiInput
+                    id="mp-town"
+                    value={field.value ?? ''}
+                    onChange={field.onChange}
+                    disabled={disabled}
+                    readOnly={readOnly}
+                    autoTransliterateFrom={pTown ?? ''}
+                  />
                 )}
               />
             </Field>
             <Field id="mp-city" label="शहर (City)" error={errors.mPCity?.message}>
               <Controller control={control} name="mPCity"
                 render={({ field }) => (
-                  <MarathiInput id="mp-city" value={field.value ?? ''} onChange={field.onChange} disabled={disabled} readOnly={readOnly} />
+                  <MarathiInput
+                    id="mp-city"
+                    value={field.value ?? ''}
+                    onChange={field.onChange}
+                    disabled={disabled}
+                    readOnly={readOnly}
+                    autoTransliterateFrom={pCity ?? ''}
+                  />
                 )}
               />
             </Field>
             <Field id="mp-taluka" label="तालुका (Taluka)" error={errors.mPTaluka?.message}>
               <Controller control={control} name="mPTaluka"
                 render={({ field }) => (
-                  <MarathiInput id="mp-taluka" value={field.value ?? ''} onChange={field.onChange} disabled={disabled} readOnly={readOnly} />
+                  <MarathiInput
+                    id="mp-taluka"
+                    value={field.value ?? ''}
+                    onChange={field.onChange}
+                    disabled={disabled}
+                    readOnly={readOnly}
+                    autoTransliterateFrom={pTaluka ?? ''}
+                  />
                 )}
               />
             </Field>
             <Field id="mp-district" label="जिल्हा (District)" error={errors.mPDistrict?.message}>
               <Controller control={control} name="mPDistrict"
                 render={({ field }) => (
-                  <MarathiInput id="mp-district" value={field.value ?? ''} onChange={field.onChange} disabled={disabled} readOnly={readOnly} />
+                  <MarathiInput
+                    id="mp-district"
+                    value={field.value ?? ''}
+                    onChange={field.onChange}
+                    disabled={disabled}
+                    readOnly={readOnly}
+                    autoTransliterateFrom={pDistrict ?? ''}
+                  />
                 )}
               />
             </Field>
