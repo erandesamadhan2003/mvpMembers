@@ -35,12 +35,9 @@ export const DashboardPage = memo(function DashboardPage() {
 
   return (
     <PageContainer>
-      <PageHeader
-        title="Dashboard"
-        description="Overview of your MVP Members organization data."
-      />
+      <PageHeader title="Dashboard" />
 
-      <Card className="mb-6 border-primary/20 bg-gradient-to-r from-orange-50 to-amber-50 shadow-sm">
+      <Card className="mb-6 border-primary/20 bg-linear-to-r from-orange-50 to-amber-50 shadow-sm">
         <CardHeader>
           <CardTitle className="text-primary">
             Welcome to MVP Members

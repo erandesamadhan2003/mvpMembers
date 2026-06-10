@@ -30,9 +30,7 @@ export const MemberList = memo(function MemberList() {
 
   return (
     <PageContainer>
-      <PageHeader
-        title=""
-      />
+      <PageHeader title="Members" />
       <MemberGrid onView={handleView} onEdit={handleEdit} />
       <MemberRecordDialog
         open={dialogOpen}

@@ -2,8 +2,8 @@ import { memo } from 'react'
 import {
   Controller,
   type Control,
-  type FieldPath,
   type FieldValues,
+  type Path,
 } from 'react-hook-form'
 import { Label } from '@/components/ui/label'
 import {
@@ -20,9 +20,9 @@ export interface FormSelectOption {
   label: string
 }
 
-interface FormSelectFieldProps<T extends FieldValues = FieldValues> {
-  control: Control<FieldValues>
-  name: string
+interface FormSelectFieldProps<TFieldValues extends FieldValues> {
+  control: Control<TFieldValues>
+  name: Path<TFieldValues>
   label: string
   options: FormSelectOption[]
   placeholder?: string
@@ -32,9 +32,7 @@ interface FormSelectFieldProps<T extends FieldValues = FieldValues> {
   id?: string
 }
 
-export const FormSelectField = memo(function FormSelectField<
-  T extends FieldValues,
->({
+function FormSelectFieldInner<TFieldValues extends FieldValues>({
   control,
   name,
   label,
@@ -44,7 +42,7 @@ export const FormSelectField = memo(function FormSelectField<
   error,
   className,
   id,
-}: FormSelectFieldProps<T>) {
+}: FormSelectFieldProps<TFieldValues>) {
   const fieldId = id ?? String(name)
 
   return (
@@ -88,4 +86,8 @@ export const FormSelectField = memo(function FormSelectField<
       ) : null}
     </div>
   )
-})
+}
+
+export const FormSelectField = memo(
+  FormSelectFieldInner,
+) as typeof FormSelectFieldInner

@@ -46,7 +46,6 @@ export const MemberDetailPage = memo(function MemberDetailPage() {
     <PageContainer>
       <PageHeader
         title={formatMemberFullName(member)}
-        description={`Member No: ${member.memberNo ?? 'N/A'}`}
         actions={
           <div className="flex items-center gap-2">
             <Button

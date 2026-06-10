@@ -3,11 +3,6 @@ export interface LoginRequest {
   password: string
 }
 
-export interface VerifyOtpRequest {
-  email: string
-  otp: string
-}
-
 export interface AuthSession {
   token: string
 }

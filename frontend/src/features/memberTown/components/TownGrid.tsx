@@ -7,7 +7,6 @@ import { GridToolbar } from '@/components/common/GridToolbar'
 import { GridSelectionBar } from '@/components/common/GridSelectionBar'
 import { ConfirmDialog } from '@/components/common/ConfirmDialog'
 import { Button } from '@/components/ui/button'
-import { Card, CardContent } from '@/components/ui/card'
 import {
   useDeleteMemberTownMutation,
   useMemberTownsQuery,
@@ -51,43 +50,40 @@ export const TownGrid = memo(function TownGrid({ onAdd }: { onAdd: () => void })
   }, [selected])
 
   return (
-    <Card className="border-border/80 shadow-sm">
-      <CardContent className="space-y-4 pt-6">
-        <GridToolbar
-          search={search}
-          onSearchChange={setSearch}
-          searchPlaceholder="Search towns..."
-          onExport={() => exportGridToCsv(gridApiRef.current, 'member-towns')}
-          actions={<Button onClick={onAdd}>Add Town</Button>}
-        />
+    <div className="space-y-4">
+      <GridToolbar
+        search={search}
+        onSearchChange={setSearch}
+        searchPlaceholder="Search towns..."
+        onExport={() => exportGridToCsv(gridApiRef.current, 'member-towns')}
+        actions={<Button onClick={onAdd}>Add Town</Button>}
+      />
 
-        <GridSelectionBar
-          hasSelection={Boolean(selected)}
-          selectedLabel={selected?.townName ?? null}
-          selectedMeta={selected?.townID ?? null}
-          emptyLabel="Select a row to view, update, or delete a town."
-          onView={() => openDialog('view')}
-          onEdit={() => openDialog('edit')}
-          onDelete={() => selected && setDeleteTarget(selected)}
-        />
+      <GridSelectionBar
+        hasSelection={Boolean(selected)}
+        selectedLabel={selected?.townName ?? null}
+        selectedMeta={selected ? `ID ${selected.townID}` : null}
+        emptyLabel="Select a row to view, update, or delete a town."
+        onView={() => openDialog('view')}
+        onEdit={() => openDialog('edit')}
+        onDelete={() => selected && setDeleteTarget(selected)}
+      />
 
-        {isError ? (
-          <p className="text-base text-destructive">{getApiErrorMessage(error)}</p>
-        ) : null}
+      {isError ? (
+        <p className="text-base text-destructive">{getApiErrorMessage(error)}</p>
+      ) : null}
 
-        <AgDataGrid
-          rowData={data}
-          columnDefs={columnDefs}
-          loading={isLoading}
-          quickFilterText={quickFilterText}
-          height={580}
-          rowSelection
-          onSelectionChanged={handleSelectionChanged}
-          onGridReady={(api) => {
-            gridApiRef.current = api
-          }}
-        />
-      </CardContent>
+      <AgDataGrid
+        rowData={data}
+        columnDefs={columnDefs}
+        loading={isLoading}
+        quickFilterText={quickFilterText}
+        rowSelection
+        onSelectionChanged={handleSelectionChanged}
+        onGridReady={(api) => {
+          gridApiRef.current = api
+        }}
+      />
 
       <TownFormDialog
         open={dialogMode !== null}
@@ -112,6 +108,6 @@ export const TownGrid = memo(function TownGrid({ onAdd }: { onAdd: () => void })
           }
         }}
       />
-    </Card>
+    </div>
   )
 })

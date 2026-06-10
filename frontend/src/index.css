@@ -130,38 +130,62 @@
   }
 }
 
-/* AG Grid ERP theme overrides */
+/* AG Grid — minimalist corporate theme */
 .ag-theme-mvp {
-  --ag-background-color: var(--card);
+  --ag-background-color: transparent;
   --ag-foreground-color: var(--foreground);
-  --ag-header-background-color: #fff7ed;
-  --ag-header-foreground-color: #9a3412;
+  --ag-header-background-color: transparent;
+  --ag-header-foreground-color: var(--muted-foreground);
   --ag-border-color: var(--border);
-  --ag-row-hover-color: #fff7ed;
-  --ag-selected-row-background-color: #ffedd5;
+  --ag-row-hover-color: color-mix(in oklch, var(--muted) 65%, transparent);
+  --ag-selected-row-background-color: color-mix(in oklch, var(--primary) 8%, transparent);
+  --ag-row-border-color: color-mix(in oklch, var(--border) 55%, transparent);
   --ag-font-family: var(--font-sans);
-  --ag-font-size: 15px;
-  --ag-header-height: 50px;
-  --ag-row-height: 48px;
-  --ag-cell-horizontal-padding: 14px;
+  --ag-font-size: 14px;
+  --ag-header-height: 44px;
+  --ag-row-height: 44px;
+  --ag-cell-horizontal-padding: 16px;
+}
+
+.ag-theme-mvp .ag-root-wrapper {
+  border: none;
+  border-radius: 0;
+}
+
+.ag-theme-mvp .ag-header {
+  border-bottom: 1px solid var(--border);
 }
 
 .ag-theme-mvp .ag-header-cell {
-  font-weight: 650;
-  font-size: 0.95rem;
-  letter-spacing: 0.01em;
+  font-weight: 600;
+  font-size: 0.75rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
 }
 
 .ag-theme-mvp .ag-cell {
-  font-weight: 450;
+  font-weight: 400;
+  font-size: 0.875rem;
+  line-height: 1.45;
+}
+
+.ag-theme-mvp .ag-row {
+  border-bottom: 1px solid color-mix(in oklch, var(--border) 50%, transparent);
 }
 
 .ag-theme-mvp .ag-row-selected .ag-cell {
   font-weight: 500;
 }
 
+.ag-theme-mvp .ag-paging-panel {
+  border-top: 1px solid var(--border);
+  padding: 10px 16px;
+  font-size: 0.8125rem;
+  color: var(--muted-foreground);
+}
+
 .ag-theme-mvp .ag-overlay-loading-center,
 .ag-theme-mvp .ag-overlay-no-rows-center {
-  font-size: 1rem;
+  font-size: 0.875rem;
   color: var(--muted-foreground);
 }

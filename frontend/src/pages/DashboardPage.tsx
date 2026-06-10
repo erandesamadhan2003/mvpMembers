@@ -16,10 +16,7 @@ export const DashboardPage = memo(function DashboardPage() {
 
   return (
     <PageContainer>
-      <PageHeader
-        title="Dashboard"
-        description="Overview of your MVP Members ERP workspace."
-      />
+      <PageHeader title="Dashboard" />
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         <StatCard
           title="Total Members"

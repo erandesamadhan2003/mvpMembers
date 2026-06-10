@@ -29,7 +29,7 @@ export const SearchBox = memo(function SearchBox({
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
         aria-label={ariaLabel}
-        className="pl-9"
+        className="h-9 pl-9"
       />
     </div>
   )

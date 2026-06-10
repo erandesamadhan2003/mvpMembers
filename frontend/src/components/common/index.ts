@@ -1,6 +1,7 @@
 export { ConfirmDialog } from '@/components/common/ConfirmDialog'
 export { EmptyState } from '@/components/common/EmptyState'
 export { ErrorState } from '@/components/common/ErrorState'
+export { GridFilterField } from '@/components/common/GridFilterField'
 export { GridToolbar } from '@/components/common/GridToolbar'
 export { GridSelectionBar } from '@/components/common/GridSelectionBar'
 export { LoadingSpinner } from '@/components/common/LoadingSpinner'

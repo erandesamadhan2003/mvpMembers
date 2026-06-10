@@ -11,7 +11,7 @@ export const PageContainer = memo(function PageContainer({
   className,
 }: PageContainerProps) {
   return (
-    <div className={cn('mx-auto w-full max-w-360 space-y-6', className)}>
+    <div className={cn('mx-auto w-full max-w-360 space-y-5', className)}>
       {children}
     </div>
   )

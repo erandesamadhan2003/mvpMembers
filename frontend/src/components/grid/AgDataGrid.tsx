@@ -14,6 +14,7 @@ import {
   GRID_OVERLAY_LOADING,
   GRID_OVERLAY_NO_ROWS,
   GRID_PAGE_SIZE,
+  GRID_PAGE_SIZE_OPTIONS,
 } from '@/components/grid/grid.constants'
 
 ModuleRegistry.registerModules([AllCommunityModule])
@@ -23,11 +24,11 @@ interface AgDataGridProps<T extends object> {
   rowData: T[]
   loading?: boolean
   className?: string
-  height?: number | string
   onGridReady?: (api: GridApi<T>) => void
   quickFilterText?: string
   rowSelection?: boolean
   onSelectionChanged?: (selectedRows: T[]) => void
+  context?: unknown
 }
 
 function AgDataGridInner<T extends object>({
@@ -35,11 +36,11 @@ function AgDataGridInner<T extends object>({
   rowData,
   loading = false,
   className,
-  height = 520,
   onGridReady,
   quickFilterText = '',
   rowSelection = false,
   onSelectionChanged,
+  context,
 }: AgDataGridProps<T>) {
   const gridRef = useRef<AgGridReact<T>>(null)
 
@@ -76,11 +77,7 @@ function AgDataGridInner<T extends object>({
 
   return (
     <div
-      className={cn(
-        'ag-theme-alpine ag-theme-mvp w-full rounded-lg border border-border shadow-sm',
-        className,
-      )}
-      style={{ height }}
+      className={cn('ag-theme-alpine ag-theme-mvp w-full', className)}
       role="region"
       aria-label="Data grid"
     >
@@ -89,12 +86,14 @@ function AgDataGridInner<T extends object>({
         columnDefs={columnDefs}
         rowData={rowData}
         defaultColDef={defaultColDef}
+        domLayout="autoHeight"
         pagination
         paginationPageSize={GRID_PAGE_SIZE}
-        paginationPageSizeSelector={[15, 30, 50]}
+        paginationPageSizeSelector={[...GRID_PAGE_SIZE_OPTIONS]}
         animateRows
         suppressCellFocus
         quickFilterText={quickFilterText}
+        context={context}
         rowSelection={rowSelection ? { mode: 'singleRow', checkboxes: false } : undefined}
         overlayLoadingTemplate={`<span class="ag-overlay-loading-center">${GRID_OVERLAY_LOADING}</span>`}
         overlayNoRowsTemplate={`<span class="ag-overlay-no-rows-center">${GRID_OVERLAY_NO_ROWS}</span>`}
@@ -103,13 +102,13 @@ function AgDataGridInner<T extends object>({
         onRowDoubleClicked={
           rowSelection
             ? (event) => {
-                if (event.data) {
-                  event.api.setNodesSelected({
-                    nodes: [event.node],
-                    newValue: true,
-                  })
-                }
+              if (event.data) {
+                event.api.setNodesSelected({
+                  nodes: [event.node],
+                  newValue: true,
+                })
               }
+            }
             : undefined
         }
       />

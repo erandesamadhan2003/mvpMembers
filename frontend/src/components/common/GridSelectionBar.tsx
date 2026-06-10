@@ -26,7 +26,7 @@ export const GridSelectionBar = memo(function GridSelectionBar({
   className,
 }: GridSelectionBarProps) {
   return (
-    <div className={cn('space-y-3', className)}>
+    <div className={cn(className)}>
       <div className="flex flex-wrap items-center gap-2">
         {showView && onView ? (
           <Button

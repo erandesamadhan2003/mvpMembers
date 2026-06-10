@@ -1,15 +1,12 @@
-import { memo, useCallback, useEffect, useMemo, useState } from 'react'
+import { memo, useCallback, useMemo, useRef, useState } from 'react'
 import type { ColDef, GridApi, ICellRendererParams } from 'ag-grid-community'
 import { AgDataGrid } from '@/components/grid/AgDataGrid'
 import {
   createActionsCellRenderer,
   type GridActionHandlers,
 } from '@/components/grid/GridActionsCell'
-import {
-  applyClientSideServerSlice,
-  createServerSideDatasource,
-  exportGridToCsv,
-} from '@/components/grid/createServerSideDatasource'
+import { exportGridToCsv } from '@/components/grid/exportCsv'
+import { useGridQuickFilter } from '@/components/grid/useGridQuickFilter'
 import { GridToolbar } from '@/components/common/GridToolbar'
 import { ConfirmDialog } from '@/components/common/ConfirmDialog'
 import { ErrorState } from '@/components/common/ErrorState'
@@ -51,11 +48,11 @@ function enrichDocument(doc: MemberDocument): DocumentGridRow {
 }
 
 export const DocumentGrid = memo(function DocumentGrid() {
+  const gridApiRef = useRef<GridApi<DocumentGridRow> | null>(null)
+  const { search, setSearch, quickFilterText } = useGridQuickFilter()
   const { data = [], isLoading, isError, error, refetch } = useDocumentsQuery()
   const deleteMutation = useDeleteDocumentMutation()
 
-  const [search, setSearch] = useState('')
-  const [gridApi, setGridApi] = useState<GridApi<DocumentGridRow> | null>(null)
   const [deleteOpen, setDeleteOpen] = useState(false)
   const [toDelete, setToDelete] = useState<MemberDocument | null>(null)
 
@@ -119,26 +116,7 @@ export const DocumentGrid = memo(function DocumentGrid() {
     [],
   )
 
-  useEffect(() => {
-    gridApi?.refreshServerSide({ purge: true })
-  }, [data, search, gridApi])
-
-  const enriched = useMemo(() => data.map(enrichDocument), [data])
-
-  const datasource = useMemo(
-    () =>
-      createServerSideDatasource<DocumentGridRow>(async (request) =>
-        applyClientSideServerSlice(enriched, request, [
-          'organizationMemberID',
-          'organizationMemberDocumentID',
-        ]),
-      ),
-    [enriched],
-  )
-
-  const handleExport = useCallback(() => {
-    if (gridApi) exportGridToCsv(gridApi, 'member-documents.csv')
-  }, [gridApi])
+  const rowData = useMemo(() => data.map(enrichDocument), [data])
 
   const handleDeleteConfirm = useCallback(() => {
     if (!toDelete) return
@@ -164,23 +142,22 @@ export const DocumentGrid = memo(function DocumentGrid() {
   }
 
   return (
-    <>
+    <div className="space-y-4">
       <GridToolbar
         search={search}
         onSearchChange={setSearch}
         searchPlaceholder="Search by member ID..."
-        onExport={handleExport}
+        onExport={() => exportGridToCsv(gridApiRef.current, 'member-documents')}
       />
       <AgDataGrid<DocumentGridRow>
         columnDefs={columnDefs}
-        serverSideDatasource={datasource}
+        rowData={rowData}
         loading={isLoading}
-        quickFilterText={search}
-        onGridReady={setGridApi}
+        quickFilterText={quickFilterText}
         context={gridContext}
-        getRowId={({ data }) =>
-          String(data.organizationMemberDocumentID)
-        }
+        onGridReady={(api) => {
+          gridApiRef.current = api
+        }}
       />
       <ConfirmDialog
         open={deleteOpen}
@@ -192,6 +169,6 @@ export const DocumentGrid = memo(function DocumentGrid() {
         loading={deleteMutation.isPending}
         destructive
       />
-    </>
+    </div>
   )
 })

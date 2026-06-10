@@ -36,7 +36,7 @@ const MemberList = lazy(() =>
   })),
 )
 const MemberCreatePage = lazy(() =>
-  import('@/features/member/pages/MemberCreatePage').then((m) => ({default: m.MemberCreatePage,})),
+  import('@/features/member/pages/MemberCreatePage').then((m) => ({ default: m.MemberCreatePage, })),
 )
 const MemberDetailPage = lazy(() =>
   import('@/features/member/pages/MemberDetailPage').then((m) => ({
@@ -152,10 +152,7 @@ export const router = createBrowserRouter([
             path: ROUTES.users,
             element: (
               <LazyPage>
-                <PlaceholderPage
-                  title="Users"
-                  description="Manage system users and access."
-                />
+                <PlaceholderPage title="Users" />
               </LazyPage>
             ),
           },
@@ -163,10 +160,7 @@ export const router = createBrowserRouter([
             path: ROUTES.roles,
             element: (
               <LazyPage>
-                <PlaceholderPage
-                  title="Roles"
-                  description="Configure role definitions."
-                />
+                <PlaceholderPage title="Roles" />
               </LazyPage>
             ),
           },
@@ -174,10 +168,7 @@ export const router = createBrowserRouter([
             path: ROUTES.permissions,
             element: (
               <LazyPage>
-                <PlaceholderPage
-                  title="Permissions"
-                  description="Fine-grained permission management."
-                />
+                <PlaceholderPage title="Permissions" />
               </LazyPage>
             ),
           },
@@ -185,10 +176,7 @@ export const router = createBrowserRouter([
             path: ROUTES.settings,
             element: (
               <LazyPage>
-                <PlaceholderPage
-                  title="Settings"
-                  description="Application and organization settings."
-                />
+                <PlaceholderPage title="Settings" />
               </LazyPage>
             ),
           },

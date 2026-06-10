@@ -9,7 +9,7 @@ export const TownList = memo(function TownList() {
 
   return (
     <PageContainer>
-      <PageHeader title="Member Towns" description="Manage towns for member center assignment." />
+      <PageHeader title="Member Towns" />
       <TownGrid onAdd={handleAdd} />
       <TownFormDialog open={createOpen} onOpenChange={setCreateOpen} />
     </PageContainer>

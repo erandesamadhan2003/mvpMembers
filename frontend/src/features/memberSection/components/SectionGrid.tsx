@@ -7,7 +7,6 @@ import { GridToolbar } from '@/components/common/GridToolbar'
 import { GridSelectionBar } from '@/components/common/GridSelectionBar'
 import { ConfirmDialog } from '@/components/common/ConfirmDialog'
 import { Button } from '@/components/ui/button'
-import { Card, CardContent } from '@/components/ui/card'
 import {
   useDeleteMemberSectionMutation,
   useMemberSectionsQuery,
@@ -61,52 +60,49 @@ export const SectionGrid = memo(function SectionGrid({ onAdd }: SectionGridProps
   }, [selected])
 
   return (
-    <Card className="border-border/80 shadow-sm">
-      <CardContent className="space-y-4 pt-6">
-        <GridToolbar
-          search={search}
-          onSearchChange={setSearch}
-          searchPlaceholder="Search sections..."
-          onExport={() => exportGridToCsv(gridApiRef.current, 'member-sections')}
-          actions={
-            <Button type="button" onClick={onAdd}>
-              Add Section
-            </Button>
-          }
-        />
+    <div className="space-y-4">
+      <GridToolbar
+        search={search}
+        onSearchChange={setSearch}
+        searchPlaceholder="Search sections..."
+        onExport={() => exportGridToCsv(gridApiRef.current, 'member-sections')}
+        actions={
+          <Button type="button" onClick={onAdd}>
+            Add Section
+          </Button>
+        }
+      />
 
-        <GridSelectionBar
-          hasSelection={Boolean(selected)}
-          selectedLabel={selected?.memberSectionName ?? null}
-          selectedMeta={selected ? `ID ${selected.memberSectionID}` : null}
-          emptyLabel="Select a row to view, update, or delete a section."
-          onView={() => openDialog('view')}
-          onEdit={() => openDialog('edit')}
-          onDelete={() => selected && setDeleteTarget(selected)}
-        />
+      <GridSelectionBar
+        hasSelection={Boolean(selected)}
+        selectedLabel={selected?.memberSectionName ?? null}
+        selectedMeta={selected ? `ID ${selected.memberSectionID}` : null}
+        emptyLabel="Select a row to view, update, or delete a section."
+        onView={() => openDialog('view')}
+        onEdit={() => openDialog('edit')}
+        onDelete={() => selected && setDeleteTarget(selected)}
+      />
 
-        {isError ? (
-          <p className="text-base text-destructive" role="alert">
-            {getApiErrorMessage(error)}
-            <Button variant="link" className="ml-2" onClick={() => refetch()}>
-              Retry
-            </Button>
-          </p>
-        ) : null}
+      {isError ? (
+        <p className="text-base text-destructive" role="alert">
+          {getApiErrorMessage(error)}
+          <Button variant="link" className="ml-2" onClick={() => refetch()}>
+            Retry
+          </Button>
+        </p>
+      ) : null}
 
-        <AgDataGrid<MemberSection>
-          columnDefs={columnDefs}
-          rowData={data}
-          loading={isLoading}
-          quickFilterText={quickFilterText}
-          height={580}
-          rowSelection
-          onSelectionChanged={handleSelectionChanged}
-          onGridReady={(api) => {
-            gridApiRef.current = api
-          }}
-        />
-      </CardContent>
+      <AgDataGrid<MemberSection>
+        columnDefs={columnDefs}
+        rowData={data}
+        loading={isLoading}
+        quickFilterText={quickFilterText}
+        rowSelection
+        onSelectionChanged={handleSelectionChanged}
+        onGridReady={(api) => {
+          gridApiRef.current = api
+        }}
+      />
 
       <SectionFormDialog
         open={dialogMode !== null}
@@ -130,6 +126,6 @@ export const SectionGrid = memo(function SectionGrid({ onAdd }: SectionGridProps
           setSelected(null)
         }}
       />
-    </Card>
+    </div>
   )
 })

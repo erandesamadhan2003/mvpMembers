@@ -25,7 +25,7 @@ Run the following commands one by one to populate your local secret store:
 dotnet user-secrets set "Redis:ConnectionString" "localhost:6379"
 
 # JWT Authentication Configuration
-dotnet user-secrets set "YOUR_JWT_SECRET_KEY"
+dotnet user-secrets set "Jwt:Key" "YOUR_JWT_SECRET_KEY"
 dotnet user-secrets set "Jwt:Issuer" "mvpMembers"
 dotnet user-secrets set "Jwt:Audience" "mvpMembersClient"
 

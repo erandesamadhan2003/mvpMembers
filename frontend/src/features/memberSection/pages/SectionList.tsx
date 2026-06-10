@@ -10,10 +10,7 @@ export const SectionList = memo(function SectionList() {
 
   return (
     <PageContainer>
-      <PageHeader
-        title="Member Sections"
-        description="Manage organization member sections used for membership grouping."
-      />
+      <PageHeader title="Member Sections" />
       <SectionGrid onAdd={handleAdd} />
       <SectionFormDialog
         open={createOpen}

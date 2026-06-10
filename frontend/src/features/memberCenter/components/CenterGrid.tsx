@@ -7,7 +7,6 @@ import { GridToolbar } from '@/components/common/GridToolbar'
 import { GridSelectionBar } from '@/components/common/GridSelectionBar'
 import { ConfirmDialog } from '@/components/common/ConfirmDialog'
 import { Button } from '@/components/ui/button'
-import { Card, CardContent } from '@/components/ui/card'
 import {
   useDeleteMemberCenterMutation,
   useMemberCentersQuery,
@@ -63,43 +62,40 @@ export const CenterGrid = memo(function CenterGrid({ onAdd }: { onAdd: () => voi
   }, [selected])
 
   return (
-    <Card className="border-border/80 shadow-sm">
-      <CardContent className="space-y-4 pt-6">
-        <GridToolbar
-          search={search}
-          onSearchChange={setSearch}
-          searchPlaceholder="Search centers..."
-          onExport={() => exportGridToCsv(gridApiRef.current, 'member-centers')}
-          actions={<Button onClick={onAdd}>Add Center</Button>}
-        />
+    <div className="space-y-4">
+      <GridToolbar
+        search={search}
+        onSearchChange={setSearch}
+        searchPlaceholder="Search centers..."
+        onExport={() => exportGridToCsv(gridApiRef.current, 'member-centers')}
+        actions={<Button onClick={onAdd}>Add Center</Button>}
+      />
 
-        <GridSelectionBar
-          hasSelection={Boolean(selected)}
-          selectedLabel={selected?.centerName ?? null}
-          selectedMeta={selected?.organizationMemberTown?.townName ?? null}
-          emptyLabel="Select a row to view, update, or delete a center."
-          onView={() => openDialog('view')}
-          onEdit={() => openDialog('edit')}
-          onDelete={() => selected && setDeleteTarget(selected)}
-        />
+      <GridSelectionBar
+        hasSelection={Boolean(selected)}
+        selectedLabel={selected?.centerName ?? null}
+        selectedMeta={selected?.organizationMemberTown?.townName ?? null}
+        emptyLabel="Select a row to view, update, or delete a center."
+        onView={() => openDialog('view')}
+        onEdit={() => openDialog('edit')}
+        onDelete={() => selected && setDeleteTarget(selected)}
+      />
 
-        {isError ? (
-          <p className="text-base text-destructive">{getApiErrorMessage(error)}</p>
-        ) : null}
+      {isError ? (
+        <p className="text-base text-destructive">{getApiErrorMessage(error)}</p>
+      ) : null}
 
-        <AgDataGrid
-          rowData={data}
-          columnDefs={columnDefs}
-          loading={isLoading}
-          quickFilterText={quickFilterText}
-          height={580}
-          rowSelection
-          onSelectionChanged={handleSelectionChanged}
-          onGridReady={(api) => {
-            gridApiRef.current = api
-          }}
-        />
-      </CardContent>
+      <AgDataGrid
+        rowData={data}
+        columnDefs={columnDefs}
+        loading={isLoading}
+        quickFilterText={quickFilterText}
+        rowSelection
+        onSelectionChanged={handleSelectionChanged}
+        onGridReady={(api) => {
+          gridApiRef.current = api
+        }}
+      />
 
       <CenterFormDialog
         open={dialogMode !== null}
@@ -124,6 +120,6 @@ export const CenterGrid = memo(function CenterGrid({ onAdd }: { onAdd: () => voi
           }
         }}
       />
-    </Card>
+    </div>
   )
 })

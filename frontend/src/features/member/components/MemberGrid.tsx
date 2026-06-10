@@ -112,8 +112,8 @@ export const MemberGrid = memo(function MemberGrid({
   )
 
   return (
-    <Card className="border-border/80 shadow-sm">
-      <CardContent className="space-y-4 pt-6">
+    <Card className="w-full">
+      <CardContent className="space-y-4">
         <GridToolbar
           search={search}
           onSearchChange={setSearch}
@@ -155,7 +155,6 @@ export const MemberGrid = memo(function MemberGrid({
             columnDefs={columnDefs}
             loading={isLoading}
             quickFilterText={quickFilterText}
-            height={600}
             rowSelection
             onSelectionChanged={handleSelectionChanged}
             onGridReady={(api) => {
