@@ -1,12 +1,10 @@
-namespace mvpMembers.Domain.Entities;
+namespace mvpMembers.Application.DTOs.OrganizationMember;
 
-public class OrganizationMember
+public class CreateOrganizationMemberRequestDto
 {
-    public long OrganizationMemberID { get; set; }
     public long? NameTitleID { get; set; }
-
+    public string FirstName { get; set; } = string.Empty;
     public string? LastName { get; set; }
-    public string? FirstName { get; set; }
     public string? MiddleName { get; set; }
     public string? NameInNativeLanguage { get; set; }
 
@@ -25,7 +23,7 @@ public class OrganizationMember
     public string? PDistrict { get; set; }
     public string? PPinCode { get; set; }
 
-    // Marathi Address
+    // Marathi Permanent Address
     public string? MTown { get; set; }
     public string? MCity { get; set; }
     public string? MTaluka { get; set; }
@@ -33,7 +31,7 @@ public class OrganizationMember
     public string? MStates { get; set; }
     public string? MPinCode { get; set; }
 
-    // Marathi Premenant Address
+    // Marathi Present Address
     public string? MPTown { get; set; }
     public string? MPCity { get; set; }
     public string? MPTaluka { get; set; }
@@ -43,55 +41,22 @@ public class OrganizationMember
     public string? Gender { get; set; }
     public DateTime? DOB { get; set; }
     public string? Qualification { get; set; }
-
     public long? OccupationID { get; set; }
-
     public string? Nominee { get; set; }
-
     public string? PhoneNo { get; set; }
     public string? MobileNo { get; set; }
-
     public string? EMail { get; set; }
-
     public string? AdharID { get; set; }
     public string? PANNo { get; set; }
-
     public string? MemberNo { get; set; }
     public string? RegNo { get; set; }
     public long? ApplicationNo { get; set; }
-
     public DateTime? RegistrationDate { get; set; }
-
-    public bool MemberCardIssue { get; set; }
-
-    public bool Death { get; set; }
-    public DateTime? DeathDate { get; set; }
-    public string? DeathRef { get; set; }
-
     public string? PrvShareHolder { get; set; }
-    public string? FlagStatus { get; set; }
     public string? Objection { get; set; }
-
     public long? MemberSectionID { get; set; }
     public long? OrganizationMemberCenterID { get; set; }
-
-    public long? TransferOrganizationMemberID { get; set; }
-
     public long? OrganizationMemberSubTownID { get; set; }
     public bool? IsTransfer { get; set; }
-
-    public long? OCode { get; set; }
-
-    public long? AddBy { get; set; }
-    public DateTime? AddByTime { get; set; }
-
-    public long? EditBy { get; set; }
-    public DateTime? EditByTime { get; set; }
-
-    public Guid URID { get; set; } = Guid.NewGuid();
-
-    public OrganizationMemberSection? MemberSection { get; set; }
-    public OrganizationMemberCenter? OrganizationMemberCenter { get; set; }
-    public OrganizationMember? TransferOrganizationMember { get; set; }
-    public OrganisationMemberSubTown? OrganisationMemberSubTown { get; set; }
+    public long? TransferOrganizationMemberID { get; set; }
 }

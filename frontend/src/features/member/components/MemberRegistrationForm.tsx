@@ -170,6 +170,7 @@ export const MemberRegistrationForm = memo(function MemberRegistrationForm({
         disabled
         memberNoReadOnly
         readOnly
+        isEdit={isEdit}
       />
     </div>
   ) : (
@@ -180,6 +181,7 @@ export const MemberRegistrationForm = memo(function MemberRegistrationForm({
         errors={errors}
         disabled={fieldsDisabled}
         memberNoReadOnly
+        isEdit={isEdit}
       />
 
       {!isEdit ? (

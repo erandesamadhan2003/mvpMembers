@@ -53,7 +53,7 @@ export const LoginPage = memo(function LoginPage() {
             <Building2 className="size-7" />
           </div>
           <div>
-            <p className="text-lg font-bold">MVP Members ERP</p>
+            <p className="text-lg font-bold">MVP Members</p>
             <p className="text-sm text-white/80">Enterprise Membership Platform</p>
           </div>
         </div>

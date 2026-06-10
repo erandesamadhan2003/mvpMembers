@@ -1,14 +1,8 @@
 import { memo, useMemo } from 'react'
 import { Controller, type Control, type FieldErrors, type UseFormRegister } from 'react-hook-form'
-import { FormSelectField } from '@/components/common/FormSelectField'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import {
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
-} from '@/components/ui/tabs'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { NAME_TITLES } from '@/features/member/constants/nameTitles.constants'
 import type { MemberFormValues } from '@/features/member/components/memberForm.schema'
 import { useMemberCentersQuery } from '@/features/memberCenter/hooks'
@@ -21,6 +15,7 @@ interface MemberFormFieldsProps {
   disabled?: boolean
   memberNoReadOnly?: boolean
   readOnly?: boolean
+  isEdit?: boolean
 }
 
 function Field({
@@ -52,6 +47,7 @@ export const MemberFormFields = memo(function MemberFormFields({
   disabled = false,
   memberNoReadOnly = false,
   readOnly = false,
+  isEdit = false,
 }: MemberFormFieldsProps) {
   const fieldClass = readOnly
     ? 'flex h-10 w-full rounded-md border border-border bg-muted/40 px-3 py-2 text-base text-foreground cursor-default'
@@ -59,24 +55,20 @@ export const MemberFormFields = memo(function MemberFormFields({
   const inputClass = readOnly
     ? 'h-10 text-base md:text-base bg-muted/40 border-border cursor-default'
     : 'h-10 text-base md:text-base'
+
   const { data: sections = [] } = useMemberSectionsQuery()
   const { data: centers = [] } = useMemberCentersQuery()
 
   const sectionOptions = useMemo(
-    () =>
-      sections.map((s) => ({
-        value: String(s.memberSectionID),
-        label: s.memberSectionName,
-      })),
+    () => sections.map((s) => ({ value: String(s.memberSectionID), label: s.memberSectionName })),
     [sections],
   )
 
   const centerOptions = useMemo(
-    () =>
-      centers.map((c) => ({
-        value: String(c.organizationMemberCenterID),
-        label: `${c.centerName} (${c.organizationMemberTown?.townName ?? '—'})`,
-      })),
+    () => centers.map((c) => ({
+      value: String(c.organizationMemberCenterID),
+      label: `${c.centerName} (${c.organizationMemberTown?.townName ?? '—'})`,
+    })),
     [centers],
   )
 
@@ -86,8 +78,10 @@ export const MemberFormFields = memo(function MemberFormFields({
         <TabsTrigger value="personal">Personal</TabsTrigger>
         <TabsTrigger value="address">Address</TabsTrigger>
         <TabsTrigger value="membership">Membership</TabsTrigger>
+        {isEdit ? <TabsTrigger value="status">Status</TabsTrigger> : null}
       </TabsList>
 
+      {/* ── Personal ── */}
       <TabsContent value="personal" className="mt-4 space-y-4">
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           <Field id="name-title" label="Title" error={errors.nameTitleID?.message}>
@@ -100,29 +94,18 @@ export const MemberFormFields = memo(function MemberFormFields({
                   className={fieldClass}
                   disabled={disabled || readOnly}
                   value={field.value != null ? String(field.value) : ''}
-                  onChange={(e) =>
-                    field.onChange(e.target.value ? Number(e.target.value) : null)
-                  }
+                  onChange={(e) => field.onChange(e.target.value ? Number(e.target.value) : null)}
                 >
                   <option value="">Select title</option>
                   {NAME_TITLES.map((title) => (
-                    <option key={title.id} value={title.id}>
-                      {title.label}
-                    </option>
+                    <option key={title.id} value={title.id}>{title.label}</option>
                   ))}
                 </select>
               )}
             />
           </Field>
           <Field id="first-name" label="First Name *" error={errors.firstName?.message}>
-            <Input
-              id="first-name"
-              className={inputClass}
-              disabled={disabled}
-              readOnly={readOnly}
-              {...register('firstName')}
-              aria-invalid={Boolean(errors.firstName)}
-            />
+            <Input id="first-name" className={inputClass} disabled={disabled} readOnly={readOnly} {...register('firstName')} aria-invalid={Boolean(errors.firstName)} />
           </Field>
           <Field id="middle-name" label="Middle Name" error={errors.middleName?.message}>
             <Input id="middle-name" className={inputClass} disabled={disabled} readOnly={readOnly} {...register('middleName')} />
@@ -130,32 +113,17 @@ export const MemberFormFields = memo(function MemberFormFields({
           <Field id="last-name" label="Last Name" error={errors.lastName?.message}>
             <Input id="last-name" className={inputClass} disabled={disabled} readOnly={readOnly} {...register('lastName')} />
           </Field>
-          <Field
-            id="native-name"
-            label="Name in Native Language"
-            error={errors.nameInNativeLanguage?.message}
-          >
-            <Input
-              id="native-name"
-              className={inputClass}
-              disabled={disabled}
-              readOnly={readOnly}
-              {...register('nameInNativeLanguage')}
-            />
+          <Field id="native-name" label="Name in Native Language" error={errors.nameInNativeLanguage?.message}>
+            <Input id="native-name" className={inputClass} disabled={disabled} readOnly={readOnly} {...register('nameInNativeLanguage')} />
           </Field>
           <Field id="phone-no" label="Phone" error={errors.phoneNo?.message}>
             <Input id="phone-no" className={inputClass} disabled={disabled} readOnly={readOnly} {...register('phoneNo')} />
           </Field>
+          <Field id="mobile-no" label="Mobile" error={errors.mobileNo?.message}>
+            <Input id="mobile-no" className={inputClass} disabled={disabled} readOnly={readOnly} {...register('mobileNo')} />
+          </Field>
           <Field id="email" label="Email" error={errors.eMail?.message}>
-            <Input
-              id="email"
-              type="email"
-              className={inputClass}
-              disabled={disabled}
-              readOnly={readOnly}
-              {...register('eMail')}
-              aria-invalid={Boolean(errors.eMail)}
-            />
+            <Input id="email" type="email" className={inputClass} disabled={disabled} readOnly={readOnly} {...register('eMail')} aria-invalid={Boolean(errors.eMail)} />
           </Field>
           <Field id="gender" label="Gender" error={errors.gender?.message}>
             <Controller
@@ -180,18 +148,8 @@ export const MemberFormFields = memo(function MemberFormFields({
           <Field id="dob" label="Date of Birth" error={errors.dob?.message}>
             <Input id="dob" type="date" className={inputClass} disabled={disabled} readOnly={readOnly} {...register('dob')} />
           </Field>
-          <Field
-            id="qualification"
-            label="Qualification"
-            error={errors.qualification?.message}
-          >
-            <Input
-              id="qualification"
-              className={inputClass}
-              disabled={disabled}
-              readOnly={readOnly}
-              {...register('qualification')}
-            />
+          <Field id="qualification" label="Qualification" error={errors.qualification?.message}>
+            <Input id="qualification" className={inputClass} disabled={disabled} readOnly={readOnly} {...register('qualification')} />
           </Field>
           <Field id="adhar-id" label="Aadhaar ID" error={errors.adharID?.message}>
             <Input id="adhar-id" className={inputClass} disabled={disabled} readOnly={readOnly} {...register('adharID')} />
@@ -199,15 +157,23 @@ export const MemberFormFields = memo(function MemberFormFields({
           <Field id="pan-no" label="PAN No." error={errors.panNo?.message}>
             <Input id="pan-no" className={inputClass} disabled={disabled} readOnly={readOnly} {...register('panNo')} />
           </Field>
+          <Field id="prv-share-holder" label="Prev. Share Holder" error={errors.prvShareHolder?.message}>
+            <Input id="prv-share-holder" className={inputClass} disabled={disabled} readOnly={readOnly} {...register('prvShareHolder')} />
+          </Field>
+          <Field id="objection" label="Objection" error={errors.objection?.message}>
+            <Input id="objection" className={inputClass} disabled={disabled} readOnly={readOnly} {...register('objection')} />
+          </Field>
         </div>
       </TabsContent>
 
+      {/* ── Address ── */}
       <TabsContent value="address" className="mt-4 space-y-6">
         <div>
-          <h4 className="mb-3 text-base font-semibold text-foreground">
-            Current / Temporary Address
-          </h4>
+          <h4 className="mb-3 text-base font-semibold text-foreground">Permanent Address</h4>
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            <Field id="town" label="Town" error={errors.town?.message}>
+              <Input id="town" className={inputClass} disabled={disabled} readOnly={readOnly} {...register('town')} />
+            </Field>
             <Field id="city" label="City" error={errors.city?.message}>
               <Input id="city" className={inputClass} disabled={disabled} readOnly={readOnly} {...register('city')} />
             </Field>
@@ -225,11 +191,13 @@ export const MemberFormFields = memo(function MemberFormFields({
             </Field>
           </div>
         </div>
+
         <div>
-          <h4 className="mb-3 text-base font-semibold text-foreground">
-            Permanent Address
-          </h4>
+          <h4 className="mb-3 text-base font-semibold text-foreground">Present Address</h4>
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            <Field id="p-town" label="Town" error={errors.pTown?.message}>
+              <Input id="p-town" className={inputClass} disabled={disabled} readOnly={readOnly} {...register('pTown')} />
+            </Field>
             <Field id="p-city" label="City" error={errors.pCity?.message}>
               <Input id="p-city" className={inputClass} disabled={disabled} readOnly={readOnly} {...register('pCity')} />
             </Field>
@@ -244,30 +212,101 @@ export const MemberFormFields = memo(function MemberFormFields({
             </Field>
           </div>
         </div>
+
+        <div>
+          <h4 className="mb-3 text-base font-semibold text-foreground">Marathi Permanent Address</h4>
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            <Field id="m-town" label="Town" error={errors.mTown?.message}>
+              <Input id="m-town" className={inputClass} disabled={disabled} readOnly={readOnly} {...register('mTown')} />
+            </Field>
+            <Field id="m-city" label="City" error={errors.mCity?.message}>
+              <Input id="m-city" className={inputClass} disabled={disabled} readOnly={readOnly} {...register('mCity')} />
+            </Field>
+            <Field id="m-taluka" label="Taluka" error={errors.mTaluka?.message}>
+              <Input id="m-taluka" className={inputClass} disabled={disabled} readOnly={readOnly} {...register('mTaluka')} />
+            </Field>
+            <Field id="m-district" label="District" error={errors.mDistrict?.message}>
+              <Input id="m-district" className={inputClass} disabled={disabled} readOnly={readOnly} {...register('mDistrict')} />
+            </Field>
+            <Field id="m-states" label="State" error={errors.mStates?.message}>
+              <Input id="m-states" className={inputClass} disabled={disabled} readOnly={readOnly} {...register('mStates')} />
+            </Field>
+            <Field id="m-pin-code" label="PIN Code" error={errors.mPinCode?.message}>
+              <Input id="m-pin-code" className={inputClass} disabled={disabled} readOnly={readOnly} {...register('mPinCode')} />
+            </Field>
+          </div>
+        </div>
+
+        <div>
+          <h4 className="mb-3 text-base font-semibold text-foreground">Marathi Present Address</h4>
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            <Field id="mp-town" label="Town" error={errors.mPTown?.message}>
+              <Input id="mp-town" className={inputClass} disabled={disabled} readOnly={readOnly} {...register('mPTown')} />
+            </Field>
+            <Field id="mp-city" label="City" error={errors.mPCity?.message}>
+              <Input id="mp-city" className={inputClass} disabled={disabled} readOnly={readOnly} {...register('mPCity')} />
+            </Field>
+            <Field id="mp-taluka" label="Taluka" error={errors.mPTaluka?.message}>
+              <Input id="mp-taluka" className={inputClass} disabled={disabled} readOnly={readOnly} {...register('mPTaluka')} />
+            </Field>
+            <Field id="mp-district" label="District" error={errors.mPDistrict?.message}>
+              <Input id="mp-district" className={inputClass} disabled={disabled} readOnly={readOnly} {...register('mPDistrict')} />
+            </Field>
+            <Field id="mp-pin-code" label="PIN Code" error={errors.mPPinCode?.message}>
+              <Input id="mp-pin-code" className={inputClass} disabled={disabled} readOnly={readOnly} {...register('mPPinCode')} />
+            </Field>
+          </div>
+        </div>
       </TabsContent>
 
+      {/* ── Membership ── */}
+      {/* ── Membership ── */}
       <TabsContent value="membership" className="mt-4 space-y-4">
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          <FormSelectField
-            control={control}
-            name="memberSectionID"
-            label="Section *"
-            options={sectionOptions}
-            placeholder="Select section"
-            disabled={disabled || readOnly}
-            error={errors.memberSectionID?.message}
-            id="member-section"
-          />
-          <FormSelectField
-            control={control}
-            name="organizationMemberCenterID"
-            label="Center"
-            options={centerOptions}
-            placeholder="Select center"
-            disabled={disabled || readOnly}
-            error={errors.organizationMemberCenterID?.message}
-            id="member-center"
-          />
+
+          <Field id="member-section" label="Section *" error={errors.memberSectionID?.message}>
+            <Controller
+              control={control}
+              name="memberSectionID"
+              render={({ field }) => (
+                <select
+                  id="member-section"
+                  className={fieldClass}
+                  disabled={disabled || readOnly}
+                  value={field.value != null ? String(field.value) : ''}
+                  onChange={(e) => field.onChange(e.target.value ? Number(e.target.value) : null)}
+                >
+                  <option value="">Select section</option>
+                  {sectionOptions.map((o) => (
+                    <option key={o.value} value={o.value}>{o.label}</option>
+                  ))}
+                </select>
+              )}
+            />
+          </Field>
+
+          <Field id="member-center" label="Center" error={errors.organizationMemberCenterID?.message}>
+            <Controller
+              control={control}
+              name="organizationMemberCenterID"
+              render={({ field }) => (
+                <select
+                  id="member-center"
+                  className={fieldClass}
+                  disabled={disabled || readOnly}
+                  value={field.value != null ? String(field.value) : ''}
+                  onChange={(e) => field.onChange(e.target.value ? Number(e.target.value) : null)}
+                >
+                  <option value="">Select center</option>
+                  {centerOptions.map((o) => (
+                    <option key={o.value} value={o.value}>{o.label}</option>
+                  ))}
+                </select>
+              )}
+            />
+          </Field>
+
+          {/* rest unchanged */}
           <Field id="member-no" label="Member No." error={errors.memberNo?.message}>
             <Input
               id="member-no"
@@ -278,25 +317,52 @@ export const MemberFormFields = memo(function MemberFormFields({
               placeholder={memberNoReadOnly ? 'Select section to generate' : undefined}
             />
           </Field>
-          <Field
-            id="registration-date"
-            label="Registration Date"
-            error={errors.registrationDate?.message}
-          >
-            <Input
-              id="registration-date"
-              type="date"
-              className={inputClass}
-              disabled={disabled}
-              readOnly={readOnly}
-              {...register('registrationDate')}
-            />
+          <Field id="reg-no" label="Reg No." error={errors.regNo?.message}>
+            <Input id="reg-no" className={inputClass} disabled={disabled} readOnly={readOnly} {...register('regNo')} />
+          </Field>
+          <Field id="application-no" label="Application No." error={errors.applicationNo?.message}>
+            <Input id="application-no" type="number" className={inputClass} disabled={disabled} readOnly={readOnly} {...register('applicationNo')} />
+          </Field>
+          <Field id="registration-date" label="Registration Date" error={errors.registrationDate?.message}>
+            <Input id="registration-date" type="date" className={inputClass} disabled={disabled} readOnly={readOnly} {...register('registrationDate')} />
           </Field>
           <Field id="nominee" label="Nominee" error={errors.nominee?.message}>
             <Input id="nominee" className={inputClass} disabled={disabled} readOnly={readOnly} {...register('nominee')} />
           </Field>
         </div>
       </TabsContent>
+
+      {/* ── Status (edit only) ── */}
+      {isEdit ? (
+        <TabsContent value="status" className="mt-4 space-y-4">
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            <Field id="death" label="Deceased" error={undefined}>
+              <Controller
+                control={control}
+                name="death"
+                render={({ field }) => (
+                  <label className="flex h-10 cursor-pointer items-center gap-2 text-sm">
+                    <input
+                      type="checkbox"
+                      className="size-4 rounded border-input accent-primary"
+                      disabled={disabled || readOnly}
+                      checked={field.value ?? false}
+                      onChange={(e) => field.onChange(e.target.checked)}
+                    />
+                    Mark as deceased
+                  </label>
+                )}
+              />
+            </Field>
+            <Field id="death-date" label="Death Date" error={errors.deathDate?.message}>
+              <Input id="death-date" type="date" className={inputClass} disabled={disabled} readOnly={readOnly} {...register('deathDate')} />
+            </Field>
+            <Field id="death-ref" label="Death Reference" error={errors.deathRef?.message}>
+              <Input id="death-ref" className={inputClass} disabled={disabled} readOnly={readOnly} {...register('deathRef')} />
+            </Field>
+          </div>
+        </TabsContent>
+      ) : null}
     </Tabs>
   )
 })

@@ -70,7 +70,7 @@ export const MemberSelectionPreview = memo(function MemberSelectionPreview({
   )
 
   const photoSrc = toDocumentDataUrl(document?.memberPhoto)
-  const signatureSrc = toDocumentDataUrl(document?.panCopy)
+  const signatureSrc = toDocumentDataUrl(document?.aadhaarCopy)
 
   return (
     <Card className="h-full border-border/80 shadow-sm">
@@ -96,10 +96,10 @@ export const MemberSelectionPreview = memo(function MemberSelectionPreview({
                   alt="Member photo"
                 />
                 <PreviewFrame
-                  label="Signature"
+                  label="Aadhaar Card"
                   src={signatureSrc}
-                  base64={document?.panCopy}
-                  alt="Member signature"
+                  base64={document?.aadhaarCopy}
+                  alt="Member Aadhaar Card"
                 />
               </div>
             )}

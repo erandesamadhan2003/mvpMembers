@@ -11,9 +11,8 @@ public class OrganizationMemberConfiguration: IEntityTypeConfiguration<Organizat
         builder.ToTable("OrganizationMember");
         builder.HasKey(x => x.OrganizationMemberID);
         builder.HasOne(x => x.MemberSection).WithMany().HasForeignKey(x => x.MemberSectionID);
-
         builder.HasOne(x => x.OrganizationMemberCenter).WithMany().HasForeignKey(x => x.OrganizationMemberCenterID);
-
         builder.HasOne(x => x.TransferOrganizationMember).WithMany().HasForeignKey(x => x.TransferOrganizationMemberID).OnDelete(DeleteBehavior.Restrict);
+        builder.HasOne(x => x.OrganisationMemberSubTown).WithMany().HasForeignKey(x => x.OrganizationMemberSubTownID).OnDelete(DeleteBehavior.Restrict);
     }
 }

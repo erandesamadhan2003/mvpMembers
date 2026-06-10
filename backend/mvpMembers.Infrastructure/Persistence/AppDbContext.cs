@@ -11,6 +11,7 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
     public DbSet<OrganizationMemberCenter> OrganizationMemberCenters { get; set; }
     public DbSet<OrganizationMember> OrganizationMembers { get; set; }
     public DbSet<OrganizationMemberDocument> OrganizationMemberDocuments { get; set; }
+    public DbSet<OrganisationMemberSubTown> OrganisationMemberSubTowns { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

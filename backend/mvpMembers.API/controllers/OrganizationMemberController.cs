@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using mvpMembers.Application.Common;
 using mvpMembers.Application.Interfaces.Services;
 using mvpMembers.Domain.Entities;
+using mvpMembers.Application.DTOs.OrganizationMember;
 
 namespace mvpMembers.API.Controllers;
 
@@ -62,12 +63,10 @@ public class OrganizationMemberController(IOrganizationMemberService organizatio
     }
 
     [HttpPost]
-    public async Task<IActionResult> Create([FromBody] CreateOrganizationMemberRequest request)
+    public async Task<IActionResult> Create([FromBody] CreateOrganizationMemberRequestDto request)
     {
         if (string.IsNullOrWhiteSpace(request.FirstName))
-        {
             return BadRequest(new ApiResponse<object>(false, "FirstName is required", 400, null));
-        }
 
         try
         {
@@ -78,28 +77,47 @@ public class OrganizationMemberController(IOrganizationMemberService organizatio
                 LastName = request.LastName,
                 MiddleName = request.MiddleName,
                 NameInNativeLanguage = request.NameInNativeLanguage,
+                Town = request.Town,
                 City = request.City,
                 Taluka = request.Taluka,
                 District = request.District,
                 States = request.States,
                 PinCode = request.PinCode,
+                PTown = request.PTown,
                 PCity = request.PCity,
                 PTaluka = request.PTaluka,
                 PDistrict = request.PDistrict,
                 PPinCode = request.PPinCode,
+                MTown = request.MTown,
+                MCity = request.MCity,
+                MTaluka = request.MTaluka,
+                MDistrict = request.MDistrict,
+                MStates = request.MStates,
+                MPinCode = request.MPinCode,
+                MPTown = request.MPTown,
+                MPCity = request.MPCity,
+                MPTaluka = request.MPTaluka,
+                MPDistrict = request.MPDistrict,
+                MPPinCode = request.MPPinCode,
                 Gender = request.Gender,
                 DOB = request.DOB,
                 Qualification = request.Qualification,
                 OccupationID = request.OccupationID,
                 Nominee = request.Nominee,
                 PhoneNo = request.PhoneNo,
+                MobileNo = request.MobileNo,
                 EMail = request.EMail,
                 AdharID = request.AdharID,
                 PANNo = request.PANNo,
                 MemberNo = request.MemberNo,
+                RegNo = request.RegNo,
+                ApplicationNo = request.ApplicationNo,
                 RegistrationDate = request.RegistrationDate ?? DateTime.UtcNow,
+                PrvShareHolder = request.PrvShareHolder,
+                Objection = request.Objection,
                 MemberSectionID = request.MemberSectionID,
                 OrganizationMemberCenterID = request.OrganizationMemberCenterID,
+                OrganizationMemberSubTownID = request.OrganizationMemberSubTownID,
                 IsTransfer = request.IsTransfer ?? false,
                 TransferOrganizationMemberID = request.TransferOrganizationMemberID,
                 MemberCardIssue = true,
@@ -118,12 +136,10 @@ public class OrganizationMemberController(IOrganizationMemberService organizatio
     }
 
     [HttpPut("{id}")]
-    public async Task<IActionResult> Update(long id, [FromBody] UpdateOrganizationMemberRequest request)
+    public async Task<IActionResult> Update(long id, [FromBody] UpdateOrganizationMemberRequestDto request)
     {
         if (string.IsNullOrWhiteSpace(request.FirstName))
-        {
             return BadRequest(new ApiResponse<object>(false, "FirstName is required", 400, null));
-        }
 
         try
         {
@@ -134,26 +150,48 @@ public class OrganizationMemberController(IOrganizationMemberService organizatio
                 LastName = request.LastName,
                 MiddleName = request.MiddleName,
                 NameInNativeLanguage = request.NameInNativeLanguage,
+                Town = request.Town,
                 City = request.City,
                 Taluka = request.Taluka,
                 District = request.District,
                 States = request.States,
                 PinCode = request.PinCode,
+                PTown = request.PTown,
                 PCity = request.PCity,
                 PTaluka = request.PTaluka,
                 PDistrict = request.PDistrict,
                 PPinCode = request.PPinCode,
+                MTown = request.MTown,
+                MCity = request.MCity,
+                MTaluka = request.MTaluka,
+                MDistrict = request.MDistrict,
+                MStates = request.MStates,
+                MPinCode = request.MPinCode,
+                MPTown = request.MPTown,
+                MPCity = request.MPCity,
+                MPTaluka = request.MPTaluka,
+                MPDistrict = request.MPDistrict,
+                MPPinCode = request.MPPinCode,
                 Gender = request.Gender,
                 DOB = request.DOB,
                 Qualification = request.Qualification,
                 OccupationID = request.OccupationID,
                 Nominee = request.Nominee,
                 PhoneNo = request.PhoneNo,
+                MobileNo = request.MobileNo,
                 EMail = request.EMail,
                 AdharID = request.AdharID,
                 PANNo = request.PANNo,
+                RegNo = request.RegNo,
+                ApplicationNo = request.ApplicationNo,
+                PrvShareHolder = request.PrvShareHolder,
+                Objection = request.Objection,
+                Death = request.Death,
+                DeathDate = request.DeathDate,
+                DeathRef = request.DeathRef,
                 MemberSectionID = request.MemberSectionID,
-                OrganizationMemberCenterID = request.OrganizationMemberCenterID
+                OrganizationMemberCenterID = request.OrganizationMemberCenterID,
+                OrganizationMemberSubTownID = request.OrganizationMemberSubTownID,
             };
 
             await _organizationMemberService.UpdateAsync(id, member);
@@ -164,7 +202,7 @@ public class OrganizationMemberController(IOrganizationMemberService organizatio
             return StatusCode(500, new ApiResponse<object>(false, $"An error occurred: {ex.Message}", 500, null));
         }
     }
-
+    
     [HttpDelete("{id}")]
     public async Task<IActionResult> Delete(long id)
     {
@@ -178,66 +216,4 @@ public class OrganizationMemberController(IOrganizationMemberService organizatio
             return StatusCode(500, new ApiResponse<object>(false, $"An error occurred: {ex.Message}", 500, null));
         }
     }
-}
-
-public class CreateOrganizationMemberRequest
-{
-    public long? NameTitleID { get; set; }
-    public string FirstName { get; set; } = string.Empty;
-    public string? LastName { get; set; }
-    public string? MiddleName { get; set; }
-    public string? NameInNativeLanguage { get; set; }
-    public string? City { get; set; }
-    public string? Taluka { get; set; }
-    public string? District { get; set; }
-    public string? States { get; set; }
-    public string? PinCode { get; set; }
-    public string? PCity { get; set; }
-    public string? PTaluka { get; set; }
-    public string? PDistrict { get; set; }
-    public string? PPinCode { get; set; }
-    public string? Gender { get; set; }
-    public DateTime? DOB { get; set; }
-    public string? Qualification { get; set; }
-    public long? OccupationID { get; set; }
-    public string? Nominee { get; set; }
-    public string? PhoneNo { get; set; }
-    public string? EMail { get; set; }
-    public string? AdharID { get; set; }
-    public string? PANNo { get; set; }
-    public string? MemberNo { get; set; }
-    public DateTime? RegistrationDate { get; set; }
-    public long? MemberSectionID { get; set; }
-    public long? OrganizationMemberCenterID { get; set; }
-    public bool? IsTransfer { get; set; }
-    public long? TransferOrganizationMemberID { get; set; }
-}
-
-public class UpdateOrganizationMemberRequest
-{
-    public long? NameTitleID { get; set; }
-    public string FirstName { get; set; } = string.Empty;
-    public string? LastName { get; set; }
-    public string? MiddleName { get; set; }
-    public string? NameInNativeLanguage { get; set; }
-    public string? City { get; set; }
-    public string? Taluka { get; set; }
-    public string? District { get; set; }
-    public string? States { get; set; }
-    public string? PinCode { get; set; }
-    public string? PCity { get; set; }
-    public string? PTaluka { get; set; }
-    public string? PDistrict { get; set; }
-    public string? PPinCode { get; set; }
-    public string? Gender { get; set; }
-    public DateTime? DOB { get; set; }
-    public string? Qualification { get; set; }
-    public long? OccupationID { get; set; }
-    public string? Nominee { get; set; }
-    public string? PhoneNo { get; set; }
-    public string? EMail { get; set; }
-    public string? AdharID { get; set; }
-    public string? PANNo { get; set; }
-    public long? MemberSectionID { get; set; }
-    public long? OrganizationMemberCenterID { get; set; }
 }

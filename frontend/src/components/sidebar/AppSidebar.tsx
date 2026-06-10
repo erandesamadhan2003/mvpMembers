@@ -136,7 +136,7 @@ export const AppSidebar = memo(function AppSidebar() {
             <p className="truncate text-sm font-semibold text-foreground">
               MVP Members
             </p>
-            <p className="truncate text-xs text-muted-foreground">ERP System</p>
+            {/* <p className="truncate text-xs text-muted-foreground">ERP System</p> */}
           </div>
         ) : null}
       </div>

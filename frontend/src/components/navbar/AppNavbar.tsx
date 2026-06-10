@@ -41,7 +41,7 @@ export const AppNavbar = memo(function AppNavbar() {
       <div className="flex shrink-0 items-center gap-3">
         <div className="hidden text-right sm:block">
           <p className="text-sm font-medium text-foreground">Administrator</p>
-          <p className="text-xs text-muted-foreground">MVP Members ERP</p>
+          <p className="text-xs text-muted-foreground">MVP Members</p>
         </div>
         <Avatar aria-hidden>
           <AvatarFallback>AD</AvatarFallback>

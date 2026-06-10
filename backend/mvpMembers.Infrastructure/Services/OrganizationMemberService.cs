@@ -13,7 +13,7 @@ public class OrganizationMemberService(IOrganizationMemberRepository organizatio
         if (string.IsNullOrWhiteSpace(organizationMember.FirstName))
             throw new ArgumentException("FirstName is required");
 
-        organizationMember.RegistrationDate = DateTime.UtcNow;
+        organizationMember.RegistrationDate ??= DateTime.UtcNow;
         organizationMember.FlagStatus = "Active";
         await _organizationMemberRepository.AddAsync(organizationMember);
 
@@ -41,26 +41,57 @@ public class OrganizationMemberService(IOrganizationMemberRepository organizatio
         existingMember.LastName = organizationMember.LastName;
         existingMember.MiddleName = organizationMember.MiddleName;
         existingMember.NameInNativeLanguage = organizationMember.NameInNativeLanguage;
+
+        // Permanent Address
+        existingMember.Town = organizationMember.Town;
         existingMember.City = organizationMember.City;
         existingMember.Taluka = organizationMember.Taluka;
         existingMember.District = organizationMember.District;
         existingMember.States = organizationMember.States;
         existingMember.PinCode = organizationMember.PinCode;
+
+        // Present Address
+        existingMember.PTown = organizationMember.PTown;
         existingMember.PCity = organizationMember.PCity;
         existingMember.PTaluka = organizationMember.PTaluka;
         existingMember.PDistrict = organizationMember.PDistrict;
         existingMember.PPinCode = organizationMember.PPinCode;
+
+        // Marathi Permanent Address
+        existingMember.MTown = organizationMember.MTown;
+        existingMember.MCity = organizationMember.MCity;
+        existingMember.MTaluka = organizationMember.MTaluka;
+        existingMember.MDistrict = organizationMember.MDistrict;
+        existingMember.MStates = organizationMember.MStates;
+        existingMember.MPinCode = organizationMember.MPinCode;
+
+        // Marathi Present Address
+        existingMember.MPTown = organizationMember.MPTown;
+        existingMember.MPCity = organizationMember.MPCity;
+        existingMember.MPTaluka = organizationMember.MPTaluka;
+        existingMember.MPDistrict = organizationMember.MPDistrict;
+        existingMember.MPPinCode = organizationMember.MPPinCode;
+
         existingMember.Gender = organizationMember.Gender;
         existingMember.DOB = organizationMember.DOB;
         existingMember.Qualification = organizationMember.Qualification;
         existingMember.OccupationID = organizationMember.OccupationID;
         existingMember.Nominee = organizationMember.Nominee;
         existingMember.PhoneNo = organizationMember.PhoneNo;
+        existingMember.MobileNo = organizationMember.MobileNo;
         existingMember.EMail = organizationMember.EMail;
         existingMember.AdharID = organizationMember.AdharID;
         existingMember.PANNo = organizationMember.PANNo;
+        existingMember.RegNo = organizationMember.RegNo;
+        existingMember.ApplicationNo = organizationMember.ApplicationNo;
+        existingMember.PrvShareHolder = organizationMember.PrvShareHolder;
+        existingMember.Objection = organizationMember.Objection;
+        existingMember.Death = organizationMember.Death;
+        existingMember.DeathDate = organizationMember.DeathDate;
+        existingMember.DeathRef = organizationMember.DeathRef;
         existingMember.MemberSectionID = organizationMember.MemberSectionID;
         existingMember.OrganizationMemberCenterID = organizationMember.OrganizationMemberCenterID;
+        existingMember.OrganizationMemberSubTownID = organizationMember.OrganizationMemberSubTownID;
         existingMember.EditByTime = DateTime.UtcNow;
 
         await _organizationMemberRepository.UpdateAsync(existingMember);

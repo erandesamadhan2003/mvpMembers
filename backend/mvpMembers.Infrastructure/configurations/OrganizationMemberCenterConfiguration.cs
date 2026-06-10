@@ -12,6 +12,6 @@ public class OrgainizationMemberCenterConfiguration: IEntityTypeConfiguration<Or
         builder.HasKey(x => x.OrganizationMemberCenterID);
         builder.Property(x => x.CenterID).HasMaxLength(50).IsRequired();
         builder.Property(x => x.CenterName).HasMaxLength(50).IsRequired();
-        builder.HasOne(x => x.OrganizationMemberTown).WithMany().HasForeignKey(x => x.OrganizationMemberTownID);
+        builder.HasOne(x => x.OrganizationMemberTown).WithMany().HasForeignKey(x => x.OrganizationMemberTownID).OnDelete(DeleteBehavior.Restrict);
     }
 }
